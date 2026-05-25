@@ -1,0 +1,91 @@
+body {
+  height: 100vh !important;
+  margin: 0px !important;
+  background-Color: #f3f3f3 !important;
+  font-family: "Poppins", Helvetica, Arial, sans-serif !important;
+}
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; 
+  width: 100%; 
+  position: absolute; 
+  top: 0;
+  left: 0;
+
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 5px !important;
+  height: 6px !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 90px;
+  height: 20px !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ccc !important;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+/* Apply to elements with scrollbars to prevent overflow */
+* {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #ddd transparent; /* Firefox */
+}
+
+/* Prevent scrollbar from adding to width */
+.scrollable-element, 
+body,
+html {
+  overflow: overlay; /* Deprecated but useful fallback */
+  box-sizing: border-box;
+}
+
+/* Modern approach - make scrollbar not take up space */
+body, 
+.modal-content,
+.scrollable-container {
+  scrollbar-gutter: stable; /* Reserves space for scrollbar */
+}
+
+/* Alternative: Use padding to accommodate scrollbar */
+@supports not (scrollbar-gutter: stable) {
+  .scrollable-element {
+    padding-right: 5px;
+  }
+}
+
+.custom-Grid{
+  background-color: #fff !important;
+  border-radius: 24px !important;
+  color: #000 !important;
+  padding: 24px !important;
+    box-shadow: 0px 4px 12px rgba(167, 167, 167, 0.4) !important; 
+
+
+}
+.custom-Grid2{
+  background-color: #eeeeee !important;
+  border-radius: 24px !important;
+  color: #000 !important;
+  padding: 24px !important;
+    box-shadow: 0px 4px 12px rgba(167, 167, 167, 0.4) !important; 
+
+
+}
+.custom-Grid-table {
+  background-color: #fff !important;
+  border-radius: 24px !important;
+  color: #000 !important;
+  padding: 24px !important;
+  box-shadow: 0px 4px 12px rgba(167, 167, 167, 0.4) !important; 
+}
