@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { AppBar, IconButton, Grid, Box } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import Notification from "./Notification";
+// import Notification from "./Notification";
 import Profile from "./Profile";
 
 const Header = ({ toggleMobileSidebar }) => {
@@ -46,7 +46,7 @@ const Header = ({ toggleMobileSidebar }) => {
             gap: 1,
           }}
         >
-          <Notification count={count} />
+          {/* <Notification count={count} /> */}
           <Profile />
         </Box>
       </Grid>

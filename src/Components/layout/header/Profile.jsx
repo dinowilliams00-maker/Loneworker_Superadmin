@@ -35,7 +35,7 @@ export default function AccountMenu() {
 
   // Use real fullName from auth context, fallback to cookie
   const displayName = fullName || "Super Admin";
-  const roleLabel = "Admin";
+  const roleLabel = "Super Admin";
 
   return (
     <>
