@@ -3,6 +3,17 @@ import {
     Grid,
     Typography,
     Chip,
+    Button,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    Checkbox,
+    ListItemText,
 } from "@mui/material";
 
 import { useState } from "react";
@@ -21,7 +32,13 @@ import {
     GetAllSimByOrgId,
 } from "../../../services/apis/organnization";
 
+import {
+    getAllDevice,
+    useUpdateDeviceStatus
+} from "../../../services/apis/device";
+
 import ManagementGrid from "../../../Components/common/managementGrid";
+import { AddIcon, CloseIcon } from "../../../Components/common/icons";
 
 import DetailsListingSkeleton from "../../../Components/common/skelenton/detailsListingSkeleton";
 
@@ -80,6 +97,11 @@ const OrganizationDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
+    // ================= DIALOG STATE =================
+    const [openAssignDialog, setOpenAssignDialog] = useState(false);
+    const [assignDialogType, setAssignDialogType] = useState(""); // "Assign" or "Unassign"
+    const [selectedDevices, setSelectedDevices] = useState([]);
+
     // ================= PAGINATION =================
     const [devicePagination, setDevicePagination] = useState({
         page: 1,
@@ -116,6 +138,42 @@ const OrganizationDetails = () => {
     );
 
     const { mutate: deleteOrganization } = DeleteOrgById();
+
+    const { data: allDevicesData } = getAllDevice({ limit: 1000 }, { enabled: openAssignDialog && assignDialogType === "Assign" });
+    const { mutate: updateDeviceStatus, isPending: isUpdatingDevice } = useUpdateDeviceStatus();
+
+    const handleAssignUnassignSubmit = () => {
+        if (!selectedDevices || selectedDevices.length === 0) return;
+        const status = assignDialogType === "Assign" ? "Assigned" : "Unassigned";
+
+        // The ID from useParams could be the Admin ID or the Org ID.
+        // We fallback to organizationDetails data to ensure we pass the correct ones.
+        const targetOrgId = organizationDetails?.data?.orgId || organizationDetails?.data?.organizationId || id;
+        const targetAssignedTo = organizationDetails?.data?.userId || organizationDetails?.data?.createdBy || organizationDetails?.data?.adminId;
+        console.log("targetOrgId", targetOrgId)
+        console.log("targetAssignedTo", targetAssignedTo)
+        console.log("deviceId", selectedDevices)
+        updateDeviceStatus({
+            userId: targetAssignedTo,
+            orgId: targetOrgId,
+            status: status,
+            deviceId: selectedDevices
+        }, {
+            onSuccess: (data) => {
+                notifySuccess(data?.message || `Devices ${status} successfully`);
+                setOpenAssignDialog(false);
+                setSelectedDevices([]);
+            },
+            onError: (error) => {
+                notifyError(error?.message || "Something went wrong");
+            }
+        });
+    };
+
+    const handleCloseAssignDialog = () => {
+        setOpenAssignDialog(false);
+        setSelectedDevices([]);
+    };
 
     // ================= SEARCH =================
     const handleDeviceSearchChange = (value) => {
@@ -264,7 +322,7 @@ const OrganizationDetails = () => {
                                         sx={{ minWidth: 250 }}
                                     />
 
-                                    <Box sx={{ minWidth: 200 }}>
+                                    <Box sx={{ minWidth: 110 }}>
                                         <CustomSelect
                                             displayEmpty
                                             value={devicePagination.poolType}
@@ -272,6 +330,8 @@ const OrganizationDetails = () => {
                                             options={poolTypeOptions}
                                         />
                                     </Box>
+                                    <Button startIcon={<AddIcon sx={{ fontSize: 18 }} />} variant="contained" sx={{ textTransform: "none" }} onClick={() => { setAssignDialogType("Assign"); setOpenAssignDialog(true); }}>Assign</Button>
+                                    <Button startIcon={<CloseIcon sx={{ fontSize: 18 }} />} variant="outlined" color="error" sx={{ textTransform: "none" }} onClick={() => { setAssignDialogType("Unassign"); setOpenAssignDialog(true); }}>Unassign</Button>
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -330,6 +390,49 @@ const OrganizationDetails = () => {
                     </Grid>
                 </Box>
             )}
+
+            {/* ================= ASSIGN/UNASSIGN DIALOG ================= */}
+            <Dialog open={openAssignDialog} onClose={handleCloseAssignDialog} maxWidth="sm" fullWidth>
+                <DialogTitle>
+                    {assignDialogType} Devices
+                </DialogTitle>
+                <DialogContent dividers>
+                    <Box sx={{ mt: 1 }}>
+                        <Typography variant="body1" mb={2} color="textSecondary">
+                            Please select devices to {assignDialogType?.toLowerCase()}:
+                        </Typography>
+                        <FormControl fullWidth>
+                            <InputLabel id="mutiple-select-label">Devices</InputLabel>
+                            <Select
+                                labelId="mutiple-select-label"
+                                multiple
+                                value={selectedDevices}
+                                onChange={(e) => setSelectedDevices(e.target.value)}
+                                label="Devices"
+                                renderValue={(selected) => `${selected.length} selected`}
+                            >
+                                {(assignDialogType === "Assign"
+                                    ? (allDevicesData?.data?.data?.filter(d => !d.isOrgAssigned) || [])
+                                    : (deviceDetails?.data?.data || [])
+                                ).map((dev) => (
+                                    <MenuItem key={dev._id} value={dev._id}>
+                                        <Checkbox checked={selectedDevices.indexOf(dev._id) > -1} />
+                                        <ListItemText primary={dev.deviceId} />
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Box>
+                </DialogContent>
+                <DialogActions sx={{ p: 2 }}>
+                    <Button variant="outlined" onClick={handleCloseAssignDialog} disabled={isUpdatingDevice}>
+                        Cancel
+                    </Button>
+                    <Button variant="contained" onClick={handleAssignUnassignSubmit} disabled={isUpdatingDevice || selectedDevices.length === 0} color={assignDialogType === "Unassign" ? "error" : "primary"}>
+                        {assignDialogType}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </>
     );
 };

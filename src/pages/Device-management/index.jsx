@@ -81,16 +81,16 @@ const Devices = () => {
         : "N/A",
       Action: (
         <Grid container justifyContent="center" key={index}>
-          <Tooltip title="View Device Details">
+          <Tooltip title="Device Details">
             <IconButton onClick={() => navigate(`/device-management/${item?._id}`)}>
               <EyeIcon size={17} />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Assign Device">
+          {/* <Tooltip title="Assign Device">
             <IconButton>
               <LinkIcon size={17} />
             </IconButton>
-          </Tooltip>
+          </Tooltip> */}
         </Grid>
       ),
     }));

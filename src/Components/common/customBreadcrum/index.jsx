@@ -32,8 +32,8 @@ const CustomBreadcrumbs = ({ breadcrumbItems }) => {
                     >
                         <Typography
                             color={(() => {
-                                console.log("pathname:", location.pathname);
-                                console.log("item.link:", item.link);
+                                // console.log("pathname:", location.pathname);
+                                // console.log("item.link:", item.link);
                                 return location.pathname === item.link
                                     ? "primary"
                                     : "text.secondary";

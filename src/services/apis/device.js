@@ -108,3 +108,47 @@ export const useGetDeviceById = (id, options = {}) => {
         ...options,
     });
 };
+
+//   ===========================Assign and Unassign Device ======================================
+const updateDeviceStatus = async ({ userId, orgId, status, deviceId }) => {
+    try {
+        const response = await axiosInstance.patch(
+            `device-registry/assign-unassign-device-to-org?assigned_to=${userId}`,
+            {
+                orgId,
+                status,
+                deviceId
+            }
+        );
+        return response.data;
+    } catch (error) {
+        throw new Error(
+            error?.response?.data?.message ||
+            "Failed to update device status"
+        );
+    }
+};
+
+export const useUpdateDeviceStatus = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: updateDeviceStatus,
+
+        retry: 2,
+
+        retryDelay: 1000,
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["GetAllOrgDetailsById"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["getDeviceDetailsByOrgId"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["GetAllSimByOrgId"],
+            });
+        },
+    });
+};
