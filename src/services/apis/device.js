@@ -18,6 +18,12 @@ export const getAllDevice = (
                 search: params.searchQuery?.trim() || "",
             };
 
+            if (params.isSimAssigned !== undefined) {
+                queryParams.isSimAssigned = params.isSimAssigned;
+                // Also adding isAssigned just in case backend expects it that way
+                // queryParams.isAssigned = params.isSimAssigned;
+            }
+
             console.log("📤 Final Params:", queryParams);
 
             const response = await axiosInstance.get(
@@ -74,5 +80,31 @@ export const useAddDevice = () => {
                 queryKey: ["GetAllDevices"],
             });
         },
+    });
+};
+
+
+
+
+const getDeviceById = async (deviceId) => {
+    try {
+        const response = await axiosInstance.get(
+            `device-registry/get-device-inventory/${deviceId}`
+        );
+        return response.data;
+    } catch (error) {
+        throw new Error(
+            error?.response?.data?.message ||
+            "Failed to fetch device details"
+        );
+    }
+};
+
+export const useGetDeviceById = (id, options = {}) => {
+    return useQuery({
+        queryKey: ["getDeviceById", id],
+        queryFn: () => getDeviceById(id),
+        enabled: !!id,
+        ...options,
     });
 };

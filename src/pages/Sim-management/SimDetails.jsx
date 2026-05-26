@@ -15,6 +15,8 @@ import DetailsListingSkeleton from "../../Components/common/skelenton/detailsLis
 import { notifyError, notifySuccess } from "../../Components/common/snackbar";
 import CustomTextField from "../../Components/common/textfield";
 
+import EditSim from "./diaog/EditSim";
+
 // ================= STATUS CHIP =================
 const StatusChip = ({ status }) => {
   const getStatusStyle = (status) => {
@@ -50,12 +52,20 @@ const StatusChip = ({ status }) => {
 };
 
 const SimDetails = () => {
-  const { id } = useParams();   // SIM ID from URL
+  const { id } = useParams();
   const navigate = useNavigate();
+
+  // ================= STATE FOR EDIT DIALOG =================
+  const [openEdit, setOpenEdit] = useState(false);
 
   // ================= API =================
   const { data: simDetails, isLoading } = useGetSimDetailsById(id);
   const { mutate: deleteSim } = useDeleteSimById();
+
+  // ================= EDIT HANDLER =================
+  const handleEditClick = () => {
+    setOpenEdit(true);
+  };
 
   // ================= DELETE SIM =================
   const handleDeleteSim = () => {
@@ -63,7 +73,7 @@ const SimDetails = () => {
       deleteSim(id, {
         onSuccess: (data) => {
           notifySuccess(data?.message || "SIM Deleted Successfully");
-          navigate("/sim-management");   // Redirect to SIM list
+          navigate("/sim-management");
         },
         onError: (error) => {
           notifyError(error?.message || "Something went wrong");
@@ -104,6 +114,13 @@ const SimDetails = () => {
           { label: "SIM Management", link: "/sim-management" },
           { label: simDetails?.data?.simNumber || "SIM Details", link: `/sim-management/${id}` },
         ]}
+
+        // === Edit Button Configuration ===
+        button="Edit SIM"
+        handleClickOpen={handleEditClick}
+        edit={true}                    // This shows Edit Icon
+
+        // === Delete Button ===
         deleteBtn="Delete SIM"
         deleteFunction={handleDeleteSim}
       />
@@ -147,6 +164,14 @@ const SimDetails = () => {
           </Grid>
         </Grid>
       )}
+
+      {/* ================= EDIT SIM DIALOG ================= */}
+      <EditSim
+        open={openEdit}
+        setOpen={setOpenEdit}
+        simDetails={simDetails}
+        id={id}
+      />
     </>
   );
 };

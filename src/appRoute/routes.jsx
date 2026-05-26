@@ -12,7 +12,7 @@ const LocationDetails = lazy(() => import("../pages/Location-tracking/LocationDe
 const Alerts = lazy(() => import("../pages/Alerts"));
 const AlertsRouting = lazy(() => import("../pages/Alerts-routing"));
 const DeviceManagement = lazy(() => import("../pages/Device-management"));
-//const DeviceDetails = lazy(() => import("../pages/Device-management/DeviceDetails"));
+const DeviceDetails = lazy(() => import("../pages/Device-management/DeviceDetails"));
 const SimManagement = lazy(() => import("../pages/Sim-management"));
 const SimDetails = lazy(() => import("../pages/Sim-management/SimDetails"));
 const SiteManagement = lazy(() => import("../pages/Site-management"));
@@ -54,7 +54,7 @@ export const routesForAuthenticatedOnly = [
       // { path: "/alerts", element: <Alerts /> },
       // { path: "/alert-routing", element: <AlertsRouting /> },
       { path: "/device-management", element: <DeviceManagement /> },
-      // { path: "/device-management/:id", element: <DeviceDetails /> },
+      { path: "/device-management/:id", element: <DeviceDetails /> },
       { path: "/sim-management", element: <SimManagement /> },
       { path: "/sim-management/:id", element: <SimDetails /> },
       { path: "/site-management", element: <SiteManagement /> },

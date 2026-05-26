@@ -23,6 +23,7 @@ export default function CustomSelect({
   id,
   name,
   displayEmpty = false,
+  MenuProps,
 }) {
   const selectId =
     id || `select-${(label ?? "select").toLowerCase().replace(/\s+/g, "-")}`;
@@ -65,6 +66,14 @@ export default function CustomSelect({
           label={label}
           onChange={(e) => handleChange(e)}
           displayEmpty={displayEmpty || !!placeholder}
+          MenuProps={{
+            PaperProps: {
+              style: {
+                maxHeight: 48 * 10, // approx 10 items
+              },
+            },
+            ...MenuProps,
+          }}
         >
           {placeholder && (
             <MenuItem value="" disabled>

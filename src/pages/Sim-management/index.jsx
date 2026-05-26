@@ -9,12 +9,13 @@ import CustomSelect from "../../Components/common/customSelect";
 import { useGetAllSim, useAssignAndUnassignSim } from "../../services/apis/sim";
 import { notifyError, notifySuccess } from "../../Components/common/snackbar";
 
-import { EyeIcon, AddIcon, CloseIcon } from "../../Components/common/icons";
+import { EyeIcon, AddIcon, CloseIcon, UploadIcon } from "../../Components/common/icons";
 import ManagementGrid from "../../Components/common/managementGrid";
 import AddSim from "./diaog/AddSim";
 import { useNavigate } from "react-router-dom";
 import { getAllDevice } from "../../services/apis/device";
 import { getAllTenants } from "../../services/apis/organnization";
+import BulkUploadSim from "./diaog/BulkUploadSim";
 
 // Breadcrumb
 const breadcrumbItems = [
@@ -38,6 +39,11 @@ const SimManagement = () => {
 
   const [openAddSim, setOpenAddSim] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState({ open: false, type: "", simId: "", deviceId: null });
+  const [openBulkUpload, setOpenBulkUpload] = useState(false);
+
+  const handleOpenUpload = () => {
+    setOpenBulkUpload(true);
+  }
 
   // ================= API CALLS =================
   const { mutate: assignUnassignSim, isPending: isAssigning } = useAssignAndUnassignSim();
@@ -64,6 +70,10 @@ const SimManagement = () => {
 
   // Get Devices with limit 1000
   const { data: devicesData } = getAllDevice({ limit: 1000 });
+  const { data: unassignedDevicesData } = getAllDevice(
+    { limit: 1000, isSimAssigned: false },
+    { enabled: confirmDialog.open && confirmDialog.type === "assign" }
+  );
 
   // Get Tenants (Organizations) with limit 1000
   const { data: tenantsData } = getAllTenants({ limit: 1000 });
@@ -92,6 +102,11 @@ const SimManagement = () => {
     }));
     setPagination((prev) => ({ ...prev, page: 1 }));
   };
+
+  //================== Add Handler =============
+  const handleOpenAdd = () => {
+    setOpenAddSim(true);
+  }
 
   // ================= STATUS CHIP =================
   const StatusChip = ({ status }) => {
@@ -150,11 +165,11 @@ const SimManagement = () => {
             <IconButton
               size="small"
               color={item?.deviceId ? "error" : "primary"}
-              onClick={() => setConfirmDialog({ 
-                open: true, 
-                type: item?.deviceId ? "unassign" : "assign", 
-                simId: item?._id, 
-                deviceId: item?.deviceId?._id || item?.deviceId 
+              onClick={() => setConfirmDialog({
+                open: true,
+                type: item?.deviceId ? "unassign" : "assign",
+                simId: item?._id,
+                deviceId: item?.deviceId?._id || item?.deviceId,
               })}
             >
               {item?.deviceId ? <CloseIcon size={22} /> : <AddIcon size={22} />}
@@ -180,15 +195,26 @@ const SimManagement = () => {
       label: dev.deviceId,
       value: dev._id,
     })) || []),
+
   ];
+  const AssUnoptions = [
+    ...(unassignedDevicesData?.data?.data?.map((item) => ({
+      label: item?.deviceId,
+      value: item?._id,
+    })) || [])
+  ]
 
   return (
     <>
       <ManagementGrid
         moduleName="SIM Management"
         breadcrumbItems={breadcrumbItems}
-        textData={`Last Updated: ${moment().format("DD-MM-YYYY HH:mm")}`}
-        textDataColor="text.primary"
+
+        // ===== Add Sim Button =====
+        button="Add Sim"
+        handleClickOpen={handleOpenAdd}
+        add={true}
+
       />
 
       <Box sx={{ bgcolor: "white", p: 3, borderRadius: 6 }}>
@@ -235,14 +261,13 @@ const SimManagement = () => {
                     />
                   </Box>
 
-                  {/* Add SIM Button */}
+                  {/* Upload Sim Button */}
                   <Button
-                    variant="contained"
-                    startIcon={<AddIcon sx={{ fontSize: 18 }} />}
-                    onClick={() => setOpenAddSim(true)}
-                    sx={{ textTransform: "none", fontWeight: 500 }}
+                    variant="outlined"
+                    startIcon={<UploadIcon />}
+                    onClick={handleOpenUpload}
                   >
-                    Add SIM
+                    Bulk upload
                   </Button>
                 </Grid>
               </Grid>
@@ -270,6 +295,10 @@ const SimManagement = () => {
       </Box>
 
       <AddSim open={openAddSim} setOpen={setOpenAddSim} />
+      <BulkUploadSim
+        openUpload={openBulkUpload}
+        setOpenUpload={setOpenBulkUpload}
+      />
 
       <Dialog open={confirmDialog.open} onClose={() => setConfirmDialog({ ...confirmDialog, open: false })} maxWidth="xs" fullWidth>
         <DialogTitle sx={{ bgcolor: confirmDialog.type === "unassign" ? "error.light" : "primary.main", color: "white" }}>
@@ -284,7 +313,7 @@ const SimManagement = () => {
               <CustomSelect
                 value={confirmDialog.deviceId || ""}
                 onChange={(selected) => setConfirmDialog({ ...confirmDialog, deviceId: selected?.value || selected })}
-                options={deviceOptions.filter(opt => opt.value !== "")}
+                options={AssUnoptions.filter(opt => opt.value !== "")}
                 fullWidth
               />
             </Box>
@@ -295,16 +324,16 @@ const SimManagement = () => {
           )}
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
-          <Button 
-            variant="outlined" 
+          <Button
+            variant="outlined"
             onClick={() => setConfirmDialog({ ...confirmDialog, open: false })}
             disabled={isAssigning}
             sx={{ color: "black", borderColor: "black" }}
           >
             Cancel
           </Button>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             color={confirmDialog.type === "unassign" ? "error" : "primary"}
             onClick={handleAssignUnassign}
             disabled={isAssigning || (confirmDialog.type === "assign" && !confirmDialog.deviceId)}

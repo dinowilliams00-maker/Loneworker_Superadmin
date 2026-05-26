@@ -1,13 +1,15 @@
 import React, { useState, useCallback } from "react";
-import { Box, Grid, IconButton, Button, Typography, Chip } from "@mui/material";
+import { Box, Grid, IconButton, Button, Typography, Chip, Tooltip } from "@mui/material";
 import moment from "moment";
 import DebouncedInput from "../../Components/common/searchField";
 import CustomTable from "../../Components/common/table/customTable";
 import { getAllDevice } from "../../services/apis/device";
-
+import LinkIcon from "@mui/icons-material/Link";
 import { EyeIcon, AddIcon } from "../../Components/common/icons";
 import ManagementGrid from "../../Components/common/managementGrid";
 import AddDevice from "./dialogs/addDevices";
+import { useNavigate } from "react-router-dom";
+
 
 // Breadcrumb
 const breadcrumbItems = [
@@ -16,6 +18,7 @@ const breadcrumbItems = [
 ];
 
 const Devices = () => {
+  const navigate = useNavigate();
   const [pagination, setPagination] = useState({
     page: 1,
     rowsPerPage: 10,
@@ -78,9 +81,16 @@ const Devices = () => {
         : "N/A",
       Action: (
         <Grid container justifyContent="center" key={index}>
-          <IconButton onClick={() => console.log("View clicked", item)}>
-            <EyeIcon size={20} />
-          </IconButton>
+          <Tooltip title="View Device Details">
+            <IconButton onClick={() => navigate(`/device-management/${item?._id}`)}>
+              <EyeIcon size={17} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Assign Device">
+            <IconButton>
+              <LinkIcon size={17} />
+            </IconButton>
+          </Tooltip>
         </Grid>
       ),
     }));

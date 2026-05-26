@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Grid } from "@mui/material";
 import { useForm } from "react-hook-form";
 import moment from "moment";
@@ -10,11 +10,18 @@ import {
 
 import CommonDialog from "../../../Components/common/dialog/common-dialog";
 import CustomTextField from "../../../Components/common/textfield";
-import { useAddSim } from "../../../services/apis/sim";
+import { useUpdateSim } from "../../../services/apis/sim";
 
 
 
-const AddSim = ({ open, setOpen }) => {
+// ================= EDIT SIM COMPONENT =================
+const EditSim = ({
+    open,
+    setOpen,
+    simDetails,     // EditAdmin
+    id,             // SIM ID
+}) => {
+
     const {
         register,
         handleSubmit,
@@ -30,48 +37,68 @@ const AddSim = ({ open, setOpen }) => {
         },
     });
 
-    // ================= REACT QUERY MUTATION =================
-    const { mutate: addSim, isPending } = useAddSim();
+    // ================= SET DEFAULT VALUES =================
+    useEffect(() => {
+        if (open && simDetails?.data) {
+            reset({
+                simNumber: simDetails?.data?.simNumber || "",
+                mobileNumber: simDetails?.data?.mobileNumber || "",
+                provider: simDetails?.data?.provider || "",
+                activationDate: simDetails?.data?.activationDate
+                    ? moment(simDetails?.data?.activationDate).format("YYYY-MM-DD")
+                    : "",
+            });
+        }
+    }, [open, simDetails, reset]);
+
+    // ================= API MUTATION =================
+    const { mutate: updateSim, isPending } = useUpdateSim();
 
     // ================= HANDLE CLOSE =================
     const handleClose = () => {
         setOpen(false);
-        reset();
+        reset(); // Optional: uncomment if you want to clear form on close
     };
 
     // ================= SUBMIT =================
     const onSubmit = (values) => {
         const payload = {
             simNumber: values.simNumber,
-            mobileNumber: values.mobileNumber,
+            mobileNumber: values.mobileNumber || null,
             provider: values.provider?.trim() || null,
             activationDate: values.activationDate
                 ? moment(values.activationDate).toISOString()
                 : null,
         };
 
-        console.log("Add SIM Payload:", payload);
+        console.log("UPDATE SIM PAYLOAD:", payload);
 
-        addSim(payload, {
-            onSuccess: (data) => {
-                notifySuccess(
-                    data?.message || "SIM Added Successfully"
-                );
-                handleClose();
+        updateSim(
+            {
+                id,
+                formData: payload,
             },
-            onError: (error) => {
-                notifyError(
-                    error?.message || "Something went wrong"
-                );
-            },
-        });
+            {
+                onSuccess: (data) => {
+                    notifySuccess(
+                        data?.message || "SIM Updated Successfully"
+                    );
+                    handleClose();
+                },
+                onError: (error) => {
+                    notifyError(
+                        error?.message || "Something went wrong"
+                    );
+                },
+            }
+        );
     };
 
     return (
         <>
             <CommonDialog
                 open={open}
-                title="Add SIM"
+                title="Edit SIM"
                 onClose={handleClose}
                 message="Are you sure you want to cancel?"
                 maxWidth="sm"
@@ -80,6 +107,7 @@ const AddSim = ({ open, setOpen }) => {
                 loading={isPending}
             >
                 <Grid container spacing={2}>
+
                     {/* ================= SIM NUMBER (Required) ================= */}
                     <Grid size={12}>
                         <CustomTextField
@@ -95,11 +123,10 @@ const AddSim = ({ open, setOpen }) => {
                         />
                     </Grid>
 
-                    {/* ================= MOBILE NUMBER (Required) ================= */}
+                    {/* ================= MOBILE NUMBER ================= */}
                     <Grid size={12}>
                         <CustomTextField
                             {...register("mobileNumber", {
-                                required: "Mobile Number is required",
                                 pattern: {
                                     value: /^\d{8,15}$/,
                                     message: "Mobile Number must be between 8 and 15 digits"
@@ -115,7 +142,7 @@ const AddSim = ({ open, setOpen }) => {
                         />
                     </Grid>
 
-                    {/* ================= PROVIDER (Optional - Text Field) ================= */}
+                    {/* ================= PROVIDER (Optional) ================= */}
                     <Grid size={12}>
                         <CustomTextField
                             {...register("provider")}
@@ -137,10 +164,11 @@ const AddSim = ({ open, setOpen }) => {
                             InputLabelProps={{ shrink: true }}
                         />
                     </Grid>
+
                 </Grid>
             </CommonDialog>
         </>
     );
 };
 
-export default AddSim;
+export default EditSim;

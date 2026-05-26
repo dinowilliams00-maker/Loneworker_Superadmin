@@ -287,6 +287,9 @@ const EditAdmin = ({
                         <Controller
                             name="noMotionAlert"
                             control={control}
+                            sx={{
+                                mt: 2
+                            }}
                             render={({ field }) => (
                                 <CustomSelect
                                     label="No Motion Alert"
@@ -298,6 +301,9 @@ const EditAdmin = ({
                                     options={noMotionAlertOptions}
                                     placeholder="Select Option"
                                     fullWidth
+                                    sx={{
+                                        mt: 2
+                                    }}
                                 />
                             )}
                         />

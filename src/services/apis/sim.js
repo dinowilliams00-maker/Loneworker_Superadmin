@@ -136,21 +136,99 @@ export const useDeleteSimById = (options = {}) => {
 };
 
 //=============Assign and Unassign Sim===========================================
+const AssignAndUnassignSim = async ({ id, type, deviceId }) => {
+    try {
+        const response = await axiosInstance.patch(
+            `sim-registry/assign-unassign-sim/${id}`,
+            { type, deviceId }
+        );
+
+        return response.data;
+    } catch (error) {
+        throw new Error(
+            error?.response?.data?.message ||
+            "Failed to assign or unassign sim"
+        );
+    }
+};
+
 export const useAssignAndUnassignSim = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async ({ id, type, deviceId }) => {
-            const payload = { type };
-            if (deviceId) {
-                payload.deviceId = deviceId;
-            }
-            const response = await axiosInstance.patch(
-                `sim-registry/assign-unassign-sim/${id}`,
-                payload
-            );
-            return response.data;
+        mutationFn: AssignAndUnassignSim,
+
+        retry: 2,
+
+        retryDelay: 1000,
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["GetAllSim"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["GetAllDevices"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["getSimDetailsById"],
+            });
         },
+    });
+};
+
+
+//=============Update sim api==================================================================================
+const updateSim = async ({ id, formData }) => {
+    try {
+        const response = await axiosInstance.patch(
+            `sim-registry/update-sim-inventory/${id}`,
+            formData
+        );
+        return response.data;
+    } catch (error) {
+        throw new Error(
+            error?.response?.data?.message ||
+            "Failed to update sim"
+        );
+    }
+};
+
+export const useUpdateSim = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: updateSim,
+        retry: 2,
+        retryDelay: 1000,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["getSimDetailsById"],
+            });
+        },
+    });
+};
+
+
+// ========================== Bulk Sim Upload =========================================
+
+const BulkSimUpload = async (formData) => {
+    try {
+        const response = await axiosInstance.post(
+            "sim-registry/bulk-create-sim-inventory",
+            formData
+        );
+        return response.data;
+    } catch (error) {
+        throw new Error(
+            error?.response?.data?.message ||
+            "Failed to bulk upload sim"
+        );
+    }
+};
+
+export const useBulkSimUpload = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: BulkSimUpload,
         retry: 2,
         retryDelay: 1000,
         onSuccess: () => {

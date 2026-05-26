@@ -146,6 +146,7 @@ const CustomTable = (props) => {
                     justifyContent: "center",
                     alignItems: "center",
                     minHeight: 300,
+
                   }}
                 >
                   <Grid
