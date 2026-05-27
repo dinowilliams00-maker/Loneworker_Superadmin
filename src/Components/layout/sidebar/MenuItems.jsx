@@ -9,6 +9,7 @@ import {
   LogoutIcon,
 } from "src/Components/common/icons";
 import SimCardIcon from '@mui/icons-material/SimCard';
+import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
 
 const Menuitems = [
   {
@@ -48,18 +49,18 @@ const Menuitems = [
   },
   {
     id: uuid(),
-    title: "Site management",
-    icon: SiteIcon,
-    href: "/site-management",
+    title: "Subscriptions",
+    icon: SubscriptionsIcon,
+    href: "/subscriptions",
     key: "Devices",
   },
-  {
-    id: uuid(),
-    title: "Admin Settings",
-    icon: AdminIcon,
-    href: "/admin-settings",
-    key: "Devices",
-  },
+  // {
+  //   id: uuid(),
+  //   title: "Admin Settings",
+  //   icon: AdminIcon,
+  //   href: "/admin-settings",
+  //   key: "Devices",
+  // },
   // {
   //   id: uuid(),
   //   title: "Profile",

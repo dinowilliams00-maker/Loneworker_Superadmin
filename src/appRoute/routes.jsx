@@ -9,14 +9,14 @@ const Organization = lazy(() => import("../pages/Organization"));
 const OrganizationDetails = lazy(() => import("../pages/Organization/organizationDetails"));
 const LocationTracking = lazy(() => import("../pages/Location-tracking"));
 const LocationDetails = lazy(() => import("../pages/Location-tracking/LocationDetails"));
-const Alerts = lazy(() => import("../pages/Alerts"));
-const AlertsRouting = lazy(() => import("../pages/Alerts-routing"));
+// const Alerts = lazy(() => import("../pages/Alerts"));
+// const AlertsRouting = lazy(() => import("../pages/Alerts-routing"));
 const DeviceManagement = lazy(() => import("../pages/Device-management"));
 const DeviceDetails = lazy(() => import("../pages/Device-management/DeviceDetails"));
 const SimManagement = lazy(() => import("../pages/Sim-management"));
 const SimDetails = lazy(() => import("../pages/Sim-management/SimDetails"));
-const SiteManagement = lazy(() => import("../pages/Site-management"));
-const SiteDetails = lazy(() => import("../pages/Site-management/SiteDetails"));
+const Subscriptions = lazy(() => import("../pages/Subscriptions"));
+// const SiteDetails = lazy(() => import("../pages/Site-management/SiteDetails"));
 const AdminSettings = lazy(() => import("../pages/Admin-settings"));
 const AdminDetails = lazy(() => import("../pages/Admin-settings/AdminDetails"));
 const Profile = lazy(() => import("../pages/Profile-setting"));
@@ -57,7 +57,7 @@ export const routesForAuthenticatedOnly = [
       { path: "/device-management/:id", element: <DeviceDetails /> },
       { path: "/sim-management", element: <SimManagement /> },
       { path: "/sim-management/:id", element: <SimDetails /> },
-      { path: "/site-management", element: <SiteManagement /> },
+      { path: "/subscriptions", element: <Subscriptions /> },
       // { path: "/site-management/:id", element: <SiteDetails /> },
       { path: "/admin-settings", element: <AdminSettings /> },
       { path: "/profile", element: <Profile /> },

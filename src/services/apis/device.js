@@ -18,10 +18,18 @@ export const getAllDevice = (
                 search: params.searchQuery?.trim() || "",
             };
 
+            // Forward isOrgAssigned (Assign dialog) if provided
+            if (params.isOrgAssigned !== undefined) {
+                queryParams.isOrgAssigned = params.isOrgAssigned;
+            }
+
+            // Forward orgId (Unassign dialog) if provided
+            if (params.orgId !== undefined) {
+                queryParams.orgId = params.orgId;
+            }
+
             if (params.isSimAssigned !== undefined) {
                 queryParams.isSimAssigned = params.isSimAssigned;
-                // Also adding isAssigned just in case backend expects it that way
-                // queryParams.isAssigned = params.isSimAssigned;
             }
 
             console.log("📤 Final Params:", queryParams);
@@ -141,13 +149,51 @@ export const useUpdateDeviceStatus = () => {
 
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["GetAllOrgDetailsById"],
+                queryKey: ["GetAllOrgDetailsById"]
             });
             queryClient.invalidateQueries({
-                queryKey: ["getDeviceDetailsByOrgId"],
+                queryKey: ["getDeviceDetailsByOrgId"]
             });
             queryClient.invalidateQueries({
-                queryKey: ["GetAllSimByOrgId"],
+                queryKey: ["GetAllSimByOrgId"]
+            });
+            // Also refresh the list of all devices used for assign dialog
+            queryClient.invalidateQueries({
+                queryKey: ["GetAllDevices"]
+            });
+        },
+    });
+};
+
+// ======================Device Bulk Upload ======================
+const deviceBulkUpload = async (formData) => {
+    try {
+        const response = await axiosInstance.post(
+            "device-registry/bulk-create-device-inventory",
+            formData
+        );
+        return response.data;
+    } catch (error) {
+        throw new Error(
+            error?.response?.data?.message ||
+            "Failed to upload devices"
+        );
+    }
+};
+
+export const useDeviceBulkUpload = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: deviceBulkUpload,
+
+        retry: 2,
+
+        retryDelay: 1000,
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["GetAllDevices"],
             });
         },
     });

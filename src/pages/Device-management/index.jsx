@@ -5,10 +5,11 @@ import DebouncedInput from "../../Components/common/searchField";
 import CustomTable from "../../Components/common/table/customTable";
 import { getAllDevice } from "../../services/apis/device";
 import LinkIcon from "@mui/icons-material/Link";
-import { EyeIcon, AddIcon } from "../../Components/common/icons";
+import { EyeIcon, AddIcon, UploadIcon } from "../../Components/common/icons";
 import ManagementGrid from "../../Components/common/managementGrid";
 import AddDevice from "./dialogs/addDevices";
 import { useNavigate } from "react-router-dom";
+import BulkUploadDevice from "./dialogs/BulkUploadDevice";
 
 
 // Breadcrumb
@@ -25,6 +26,11 @@ const Devices = () => {
     searchQuery: "",
   });
   const [openAddDevice, setOpenAddDevice] = useState(false);
+  const [openBulkUpload, setOpenBulkUpload] = useState(false);
+
+  const handleOpenUpload = () => {
+    setOpenBulkUpload(true);
+  }
 
   const { data: devicesData, isLoading } = getAllDevice(pagination);
 
@@ -35,6 +41,10 @@ const Devices = () => {
       page: 1,
     }));
   }, []);
+
+  const handleOpenAdd = () => {
+    setOpenAddDevice(true);
+  };
 
   // ==================== IMPROVED STATUS CHIP ====================
   const StatusChip = ({ status }) => {
@@ -101,8 +111,12 @@ const Devices = () => {
       <ManagementGrid
         moduleName="Devices"
         breadcrumbItems={breadcrumbItems}
-        textData={`Last Updated: ${moment().format("DD-MM-YYYY HH:mm")}`}
-        textDataColor="text.primary"
+        // textData={`Last Updated: ${moment().format("DD-MM-YYYY HH:mm")}`}
+        // textDataColor="text.primary"
+        // ===============Add Device Button=============
+        button="Add Device"
+        handleClickOpen={handleOpenAdd}
+        add={true}
       />
 
       <Box sx={{ bgcolor: "white", p: 3, borderRadius: 6 }}>
@@ -130,12 +144,11 @@ const Devices = () => {
 
                   {/* ✅ FIXED BUTTON */}
                   <Button
-                    variant="contained"
-                    startIcon={<AddIcon sx={{ fontSize: 18 }} />}
-                    onClick={() => setOpenAddDevice(true)}
-                    sx={{ textTransform: "none", fontWeight: 500 }}
+                    variant="outlined"
+                    startIcon={<UploadIcon />}
+                    onClick={handleOpenUpload}
                   >
-                    Add Device
+                    Bulk upload
                   </Button>
                 </Grid>
               </Grid>
@@ -161,6 +174,7 @@ const Devices = () => {
       </Box>
 
       <AddDevice open={openAddDevice} setOpen={setOpenAddDevice} />
+      <BulkUploadDevice openUpload={openBulkUpload} setOpenUpload={setOpenBulkUpload} />
     </>
   );
 };

@@ -23,6 +23,8 @@ import {
     useParams,
 } from "react-router-dom";
 
+import { useCallback } from "react";
+
 import moment from "moment";
 
 import {
@@ -116,6 +118,8 @@ const OrganizationDetails = () => {
         rowsPerPage: 10,
         searchQuery: "",
     });
+    console.log("devicePagination", devicePagination)
+    // console.log("setdevicePagination", setDevicePagination)
 
     // ================= FILTER OPTIONS =================
     const poolTypeOptions = [
@@ -139,8 +143,32 @@ const OrganizationDetails = () => {
 
     const { mutate: deleteOrganization } = DeleteOrgById();
 
-    const { data: allDevicesData } = getAllDevice({ limit: 1000 }, { enabled: openAssignDialog && assignDialogType === "Assign" });
+    // Fetch devices for Assign dialog → ?isOrgAssigned=false
+    const { data: assignDevicesData, refetch: refetchAssignDevices } = getAllDevice(
+        { limit: 1000, isOrgAssigned: false },
+        { enabled: false }
+    );
+
+    // Fetch devices for Unassign dialog → ?orgId=<orgId>
+    const targetOrgIdForQuery = organizationDetails?.data?.orgId || organizationDetails?.data?.organizationId || id;
+    const { data: unassignDevicesData, refetch: refetchUnassignDevices } = getAllDevice(
+        { limit: 1000, orgId: targetOrgIdForQuery },
+        { enabled: false }
+    );
+
     const { mutate: updateDeviceStatus, isPending: isUpdatingDevice } = useUpdateDeviceStatus();
+
+    // Helper to open dialog and fetch the right device list
+    const openDialog = (type) => {
+        setAssignDialogType(type);
+        setSelectedDevices([]);
+        setOpenAssignDialog(true);
+        if (type === "Assign") {
+            refetchAssignDevices();
+        } else {
+            refetchUnassignDevices();
+        }
+    };
 
     const handleAssignUnassignSubmit = () => {
         if (!selectedDevices || selectedDevices.length === 0) return;
@@ -161,6 +189,10 @@ const OrganizationDetails = () => {
         }, {
             onSuccess: (data) => {
                 notifySuccess(data?.message || `Devices ${status} successfully`);
+                // Refresh both device lists so dialogs show up-to-date info
+                refetchAssignDevices();
+                refetchUnassignDevices();
+                setDevicePagination(prev => ({ ...prev, page: 1 }));
                 setOpenAssignDialog(false);
                 setSelectedDevices([]);
             },
@@ -176,21 +208,29 @@ const OrganizationDetails = () => {
     };
 
     // ================= SEARCH =================
-    const handleDeviceSearchChange = (value) => {
+    const handleDeviceSearchChange = useCallback((event) => {
+        const value =
+            typeof event === "string"
+                ? event
+                : event?.target?.value || "";
         setDevicePagination((prev) => ({
             ...prev,
             searchQuery: value,
             page: 1,
         }));
-    };
+    }, []);
 
-    const handleSimSearchChange = (value) => {
+    const handleSimSearchChange = useCallback((event) => {
+        const value =
+            typeof event === "string"
+                ? event
+                : event?.target?.value || "";
         setSimPagination((prev) => ({
             ...prev,
             searchQuery: value,
             page: 1,
         }));
-    };
+    }, []);
 
     // ================= FILTER =================
     const handlePoolTypeChange = (selected) => {
@@ -330,8 +370,8 @@ const OrganizationDetails = () => {
                                             options={poolTypeOptions}
                                         />
                                     </Box>
-                                    <Button startIcon={<AddIcon sx={{ fontSize: 18 }} />} variant="contained" sx={{ textTransform: "none" }} onClick={() => { setAssignDialogType("Assign"); setOpenAssignDialog(true); }}>Assign</Button>
-                                    <Button startIcon={<CloseIcon sx={{ fontSize: 18 }} />} variant="outlined" color="error" sx={{ textTransform: "none" }} onClick={() => { setAssignDialogType("Unassign"); setOpenAssignDialog(true); }}>Unassign</Button>
+                                    <Button startIcon={<AddIcon sx={{ fontSize: 18 }} />} variant="contained" sx={{ textTransform: "none" }} onClick={() => openDialog("Assign")}>Assign</Button>
+                                    <Button startIcon={<CloseIcon sx={{ fontSize: 18 }} />} variant="outlined" color="error" sx={{ textTransform: "none" }} onClick={() => openDialog("Unassign")}>Unassign</Button>
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -392,7 +432,7 @@ const OrganizationDetails = () => {
             )}
 
             {/* ================= ASSIGN/UNASSIGN DIALOG ================= */}
-            <Dialog open={openAssignDialog} onClose={handleCloseAssignDialog} maxWidth="sm" fullWidth>
+            <Dialog open={openAssignDialog} onClose={handleCloseAssignDialog} maxWidth="xs" fullWidth >
                 <DialogTitle>
                     {assignDialogType} Devices
                 </DialogTitle>
@@ -402,7 +442,10 @@ const OrganizationDetails = () => {
                             Please select devices to {assignDialogType?.toLowerCase()}:
                         </Typography>
                         <FormControl fullWidth>
-                            <InputLabel id="mutiple-select-label">Devices</InputLabel>
+                            <InputLabel id="mutiple-select-label">
+                                Devices
+                            </InputLabel>
+
                             <Select
                                 labelId="mutiple-select-label"
                                 multiple
@@ -410,13 +453,20 @@ const OrganizationDetails = () => {
                                 onChange={(e) => setSelectedDevices(e.target.value)}
                                 label="Devices"
                                 renderValue={(selected) => `${selected.length} selected`}
+                                MenuProps={{
+                                    PaperProps: {
+                                        style: {
+                                            maxHeight: 300,
+                                        },
+                                    },
+                                }}
                             >
                                 {(assignDialogType === "Assign"
-                                    ? (allDevicesData?.data?.data?.filter(d => !d.isOrgAssigned) || [])
-                                    : (deviceDetails?.data?.data || [])
-                                ).map((dev) => (
+                                    ? (assignDevicesData?.data?.data || [])
+                                    : (unassignDevicesData?.data?.data || [])
+                                ).map(dev => (
                                     <MenuItem key={dev._id} value={dev._id}>
-                                        <Checkbox checked={selectedDevices.indexOf(dev._id) > -1} />
+                                        <Checkbox checked={selectedDevices.includes(dev._id)} />
                                         <ListItemText primary={dev.deviceId} />
                                     </MenuItem>
                                 ))}

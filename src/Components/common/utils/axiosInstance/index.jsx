@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 export const axiosInstance = axios.create({
-  baseURL: "http://10.5.50.238:8008/api/v1/",
+  baseURL: "http://10.5.50.32:8008/api/v1/",
   // baseURL: "https://api.tracklone.io/api/v1/",
 });
 
