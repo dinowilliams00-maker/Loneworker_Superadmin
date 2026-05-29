@@ -32,6 +32,7 @@ import {
     DeleteOrgById,
     getDeviceDetailsByOrgId,
     GetAllSimByOrgId,
+    useActivateDeactivateAdminById,
 } from "../../../services/apis/organnization";
 
 import {
@@ -142,6 +143,27 @@ const OrganizationDetails = () => {
     );
 
     const { mutate: deleteOrganization } = DeleteOrgById();
+    const { mutate: activateDeactivateAdmin, isPending: isActivating } = useActivateDeactivateAdminById();
+
+    const isDeactivated = organizationDetails?.data?.isDeactivated;
+
+    // ================= ACTIVATE / DEACTIVATE =================
+    const handleActivateDeactivate = () => {
+        if (id) {
+            const action = isDeactivated ? "activate" : "deactivate";
+            activateDeactivateAdmin(
+                { orgId: id, body: { action } },
+                {
+                    onSuccess: (data) => {
+                        notifySuccess(data?.message || `Organization ${action}d successfully`);
+                    },
+                    onError: (error) => {
+                        notifyError(error?.message || "Something went wrong");
+                    },
+                }
+            );
+        }
+    };
 
     // Fetch devices for Assign dialog → ?isOrgAssigned=false
     const { data: assignDevicesData, refetch: refetchAssignDevices } = getAllDevice(
@@ -267,6 +289,16 @@ const OrganizationDetails = () => {
             label: "No Motion Alert",
             value: organizationDetails?.data?.noMotionAlert ? "True" : "False",
         },
+        {
+            label: "Status",
+            value: (
+                <CustomTextField
+                    disabled
+                    disabledColor={isDeactivated ? "#FF3B30" : "#3FB00F"}   // ← Yeh important hai
+                    value={isDeactivated ? "Inactive" : "Active"}
+                />
+            ),
+        },
         { label: "Device Count", value: organizationDetails?.data?.deviceCount || 0 },
         { label: "SIM Count", value: organizationDetails?.data?.simCount || 0 },
     ];
@@ -308,11 +340,16 @@ const OrganizationDetails = () => {
         <>
             {/* ================= HEADER ================= */}
             <ManagementGrid
-                moduleName="Organization Details"
+                moduleName="Organization Admin Details"
                 breadcrumbItems={[
                     { label: "Organizations", link: "/" },
                     { label: organizationDetails?.data?.name || "Organization Details", link: `/organization/${id}` },
                 ]}
+                // Activate / Deactivate Button
+                activateDeactivateBtn={isDeactivated ? "Activate Organization" : "Deactivate Organization"}
+                activateDeactivateFunction={handleActivateDeactivate}
+                isDeactivated={isDeactivated}
+                // Delete Button
                 deleteBtn="Delete Organization"
                 deleteFunction={handleDelete}
             />
@@ -324,18 +361,22 @@ const OrganizationDetails = () => {
                 <Grid container className="custom-Grid" spacing={3} bgcolor="white" p={3} borderRadius={6}>
                     <Grid size={12}>
                         <Typography variant="h6" fontWeight={600}>
-                            {organizationDetails?.data?.name} Details
+                            {organizationDetails?.data?.name}  Details
                         </Typography>
                     </Grid>
 
                     <Grid size={12}>
                         <Grid container spacing={2}>
                             {organizationInfo.map((item, index) => (
-                                <Grid size={{ xs: 12, md: index < 2 ? 6 : 4 }} key={index}>
+                                <Grid size={{ xs: 12, md: 4 }} key={index}>
                                     <Typography mb={1} variant="subtitle1">
                                         {item.label}
                                     </Typography>
-                                    <CustomTextField disabled value={item.value} />
+                                    {typeof item.value === "object" ? (
+                                        item.value
+                                    ) : (
+                                        <CustomTextField disabled value={item.value} />
+                                    )}
                                 </Grid>
                             ))}
                         </Grid>

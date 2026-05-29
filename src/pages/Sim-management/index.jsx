@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { getAllDevice } from "../../services/apis/device";
 import { getAllTenants } from "../../services/apis/organnization";
 import BulkUploadSim from "./diaog/BulkUploadSim";
+import LinkIcon from "@mui/icons-material/Link";
 
 // Breadcrumb
 const breadcrumbItems = [
@@ -172,7 +173,7 @@ const SimManagement = () => {
                 deviceId: item?.deviceId?._id || item?.deviceId,
               })}
             >
-              {item?.deviceId ? <CloseIcon size={22} /> : <AddIcon size={22} />}
+              {item?.deviceId ? <CloseIcon size={22} /> : <LinkIcon size={22} />}
             </IconButton>
           </Tooltip>
         </Grid>

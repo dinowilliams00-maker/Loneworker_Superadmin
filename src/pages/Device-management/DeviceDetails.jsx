@@ -5,7 +5,7 @@ import {
     Chip,
 } from "@mui/material";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
 
@@ -96,17 +96,44 @@ const DeviceDetails = () => {
             value: deviceDetails?.data?.simId?.mobileNumber || "NA"
         },
         { label: "Pool Type", value: deviceDetails?.data?.poolType || "NA" },
-        { label: "Status", value: deviceDetails?.data?.status || "NA" },
+        {
+            label: "Status",
+            value: (
+                <CustomTextField
+                    disabled
+                    disabledColor={
+                        deviceDetails?.data?.status === "Active"
+                            ? "#3FB00F"
+                            : "#FF3B30"
+                    }
+                    value={deviceDetails?.data?.status || "NA"}
+                />
+            ),
+        },
         {
             label: "Organization",
             value: deviceDetails?.data?.orgId?.name || "NA"
         },
         {
-            label: " SIM Assigned",
-            value: deviceDetails?.data?.isSimAssigned ? "Yes" : "No"
+            label: "SIM Assigned",
+            value: (
+                <CustomTextField
+                    disabled
+                    disabledColor={
+                        deviceDetails?.data?.isSimAssigned
+                            ? "#2e7d32"
+                            : "#d32f2f"
+                    }
+                    value={
+                        deviceDetails?.data?.isSimAssigned
+                            ? "Yes"
+                            : "No"
+                    }
+                />
+            ),
         },
         {
-            label: "Org Assigned",
+            label: "Organization Assigned",
             value: deviceDetails?.data?.isOrgAssigned ? "Yes" : "No"
         },
         {
@@ -173,16 +200,20 @@ const DeviceDetails = () => {
                         <Grid container spacing={2}>
                             {deviceInfo.map((item, index) => (
                                 <Grid
-                                    size={{ xs: 12, md: index < 2 ? 6 : 4 }}
+                                    size={{ xs: 12, md: index < 2 ? 4 : 4 }}
                                     key={index}
                                 >
                                     <Typography mb={1} variant="subtitle1">
                                         {item.label}
                                     </Typography>
-                                    <CustomTextField
-                                        disabled
-                                        value={item.value}
-                                    />
+                                    {React.isValidElement(item.value) ? (
+                                        item.value
+                                    ) : (
+                                        <CustomTextField
+                                            disabled
+                                            value={item.value}
+                                        />
+                                    )}
                                 </Grid>
                             ))}
                         </Grid>

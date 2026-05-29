@@ -1,5 +1,6 @@
 import React from "react";
 import { Grid, Typography, Button } from "@mui/material";
+import { CheckCircle, Block } from "@mui/icons-material";
 import Breadcrumbs from "src/components/customBreadcrum";
 import { EditIcon, AddIcon } from "../icons";
 import CustomSelect from "../customSelect";
@@ -18,6 +19,9 @@ const ManagementGrid = ({
     buttonAgent,
     handleClickOpenAgent,
     deleteBtn,
+    activateDeactivateBtn,
+    activateDeactivateFunction,
+    isDeactivated,
     edit,
     select,
     textData,
@@ -99,6 +103,17 @@ const ManagementGrid = ({
                             >
                                 {button}
                             </Button>
+                        )}
+
+                        {activateDeactivateBtn && (
+                            <ConfirmationDialog
+                                deleteBtn={activateDeactivateBtn}
+                                message={`Are you sure you want to ${isDeactivated ? "activate" : "deactivate"} ?`}
+                                deleteFunction={activateDeactivateFunction}
+                                btnIcon={isDeactivated ? <CheckCircle /> : <Block />}
+                                btnBgColor={isDeactivated ? "#2e7d32" : "#ed6c02"}
+                                btnHoverColor={isDeactivated ? "#1b5e20" : "#e65100"}
+                            />
                         )}
 
                         {deleteBtn && (

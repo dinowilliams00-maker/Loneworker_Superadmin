@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Box, Grid, IconButton, Button, Typography } from "@mui/material";
+import { Box, Grid, IconButton, Button, Typography, Chip } from "@mui/material";
 import moment from "moment";
 import DebouncedInput from "../../Components/common/searchField";
 import CustomTable from "../../Components/common/table/customTable";
@@ -30,6 +30,26 @@ const Tenants = () => {
 
   const { data: tenantsData, isLoading, refetch } = getAllTenants(pagination);
 
+  // Status Chip for ADmin
+  // ==================== IMPROVED STATUS CHIP ====================
+  // Status Chip for Organizations (isDeactivated)
+  const StatusChip = ({ status }) => {
+    const isInactive = Boolean(status); // true if deactivated
+
+    return (
+      <Chip
+        label={isInactive ? "Inactive" : "Active"}
+        size="small"
+        sx={{
+          backgroundColor: isInactive ? "#ffecec" : "#e6f9ec",
+          color: isInactive ? "#FF3B30" : "#3FB00F",
+          fontWeight: 600,
+          borderRadius: "6px",
+          "& .MuiChip-label": { px: 2 },
+        }}
+      />
+    );
+  };
   // Search handling – debounced
   const handleSearchChange = useCallback((value) => {
     setPagination((prev) => ({
@@ -50,6 +70,7 @@ const Tenants = () => {
       createdAt: item?.createdAt
         ? moment(item.createdAt).format("DD-MM-YYYY HH:mm")
         : "N/A",
+      status: <StatusChip status={item?.isDeactivated} />,
       Action: (
         <Grid
           container
@@ -133,7 +154,7 @@ const Tenants = () => {
               </Grid>
 
               <CustomTable
-                columns={["NAME", "EMAIL", "PHONE", "CREATED AT", "ACTION"]}
+                columns={["NAME", "EMAIL", "PHONE", "CREATED AT", "STATUS", "ACTION"]}
                 rows={formattedRows(tenantsData?.data?.admins)}
                 pagination={pagination}
                 setPagination={setPagination}

@@ -75,6 +75,16 @@ const CustomTextField = ({
           "& .MuiInputBase-root": {
             justifyContent: field === "button" ? "space-between" : "inherit",
           },
+
+          // 🔥 Only apply special color when disabledColor prop is passed
+          ...(restProps.disabledColor && {
+            "& .MuiInputBase-input.Mui-disabled": {
+              color: restProps.disabledColor,
+              WebkitTextFillColor: restProps.disabledColor,
+              fontWeight: 600,
+              opacity: "1 !important",
+            },
+          }),
         }}
         // MUI v6: use slotProps instead of InputLabelProps / inputProps / InputProps
         slotProps={{

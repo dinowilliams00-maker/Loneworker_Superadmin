@@ -191,6 +191,7 @@ export const getDeviceDetailsByOrgId = (
   });
 };
 
+// ========================Update Admin By Id==================================
 export const UpdateOrgById = (options = {}) => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -249,6 +250,33 @@ export const GetAllSimByOrgId = (
     },
     keepPreviousData: true,
     refetchOnWindowFocus: false,
+    ...options,
+  });
+};
+
+
+//=================================== Activate Deactivate Admin By Id========================================
+const activateDeactivateAdminById = async ({ orgId, body }) => {
+  const response = await axiosInstance.patch(
+    `super/tenant-db/${orgId}`,
+    body
+  );
+  return response.data;
+};
+
+export const useActivateDeactivateAdminById = (options = {}) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["activateDeactivateAdminById"],
+    mutationFn: activateDeactivateAdminById,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["GetAllTenants"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["GetAllOrgDetailsById"],
+      });
+    },
     ...options,
   });
 };

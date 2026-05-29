@@ -5,7 +5,7 @@ import {
   Chip,
 } from "@mui/material";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
 
@@ -88,7 +88,20 @@ const SimDetails = () => {
     { label: "Mobile Number", value: simDetails?.data?.mobileNumber || "NA" },
     { label: "Provider", value: simDetails?.data?.provider || "NA" },
     { label: "Plan Type", value: simDetails?.data?.planType || "NA" },
-    { label: "Status", value: simDetails?.data?.status || "NA" },
+    {
+      label: "Status",
+      value: (
+        <CustomTextField
+          disabled
+          disabledColor={
+            simDetails?.data?.status === "Active"
+              ? "#3FB00F"
+              : "#FF3B30"
+          }
+          value={simDetails?.data?.status || "NA"}
+        />
+      ),
+    },
     { label: "Device ID", value: simDetails?.data?.deviceId?.deviceId || "NA" },
     { label: "Organization", value: simDetails?.data?.orgId?.name || "NA" },
     {
@@ -148,16 +161,20 @@ const SimDetails = () => {
             <Grid container spacing={2}>
               {simInfo.map((item, index) => (
                 <Grid
-                  size={{ xs: 12, md: index < 2 ? 6 : 4 }}
+                  size={{ xs: 12, md: index < 2 ? 4 : 4 }}
                   key={index}
                 >
                   <Typography mb={1} variant="subtitle1">
                     {item.label}
                   </Typography>
-                  <CustomTextField
-                    disabled
-                    value={item.value}
-                  />
+                  {React.isValidElement(item.value) ? (
+                    item.value
+                  ) : (
+                    <CustomTextField
+                      disabled
+                      value={item.value}
+                    />
+                  )}
                 </Grid>
               ))}
             </Grid>

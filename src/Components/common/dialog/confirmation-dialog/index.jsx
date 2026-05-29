@@ -75,6 +75,9 @@ const CustomizedDialogs = ({
     deleteBtn,
     deleteFunction,
     title = "Confirmation",
+    btnIcon,
+    btnBgColor,
+    btnHoverColor,
 }) => {
     const [open, setOpen] = useState(false);
 
@@ -130,14 +133,14 @@ const CustomizedDialogs = ({
                 // Delete Button
                 <Button
                     onClick={handleClickOpen}
-                    startIcon={<DeleteIcon />}
+                    startIcon={btnIcon || <DeleteIcon />}
                     variant="contained"
                     size="large"
                     sx={{
                         color: "#FFFFFF",
-                        backgroundColor: "#FF3B30",
+                        backgroundColor: btnBgColor || "#FF3B30",
                         "&:hover": {
-                            backgroundColor: "#FF3B30",
+                            backgroundColor: btnHoverColor || btnBgColor || "#FF3B30",
                         },
                     }}
                 >
