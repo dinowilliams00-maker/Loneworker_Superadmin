@@ -63,24 +63,25 @@ const DeviceDetails = () => {
     // const { mutate: deleteDevice } = useDeleteDeviceById();
 
     // ================= EDIT HANDLER =================
-    // const handleEditClick = () => {
-    //     setOpenEdit(true);
-    // };
+    const handleEditClick = () => {
+        setOpenEdit(true);
+    };
+
 
     // ================= DELETE DEVICE =================
-    // const handleDeleteDevice = () => {
-    //     if (id) {
-    //         deleteDevice(id, {
-    //             onSuccess: (data) => {
-    //                 notifySuccess(data?.message || "Device Deleted Successfully");
-    //                 navigate("/device-management"); // Adjust route as per your project
-    //             },
-    //             onError: (error) => {
-    //                 notifyError(error?.message || "Something went wrong");
-    //             },
-    //         });
-    //     }
-    // };
+    const handleDeleteDevice = () => {
+        if (id) {
+            deleteDevice(id, {
+                onSuccess: (data) => {
+                    notifySuccess(data?.message || "Device Deleted Successfully");
+                    navigate("/device-management"); // Adjust route as per your project
+                },
+                onError: (error) => {
+                    notifyError(error?.message || "Something went wrong");
+                },
+            });
+        }
+    };
 
     // ================= DEVICE INFO =================
     const deviceInfo = [
@@ -167,14 +168,14 @@ const DeviceDetails = () => {
                     { label: deviceDetails?.data?.deviceId || "Device Details", link: `/device-management/${id}` },
                 ]}
 
-            // === Edit Button ===
-            // button="Edit Device"
-            // handleClickOpen={handleEditClick}
-            // edit={true}
+                // === Edit Button ===
+                button="Edit Device"
+                handleClickOpen={handleEditClick}
+                edit={true}
 
-            // === Delete Button ===
-            // deleteBtn="Delete Device"
-            // deleteFunction={handleDeleteDevice}
+                // === Delete Button ===
+                deleteBtn="Delete Device"
+                deleteFunction={handleDeleteDevice}
             />
 
             {/* ================= DEVICE DETAILS ================= */}
