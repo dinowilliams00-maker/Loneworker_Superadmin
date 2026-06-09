@@ -10,6 +10,7 @@ import {
 } from "src/Components/common/icons";
 import SimCardIcon from '@mui/icons-material/SimCard';
 import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
+import HistoryIcon from '@mui/icons-material/History';
 
 const Menuitems = [
   {
@@ -52,6 +53,13 @@ const Menuitems = [
     title: "Subscriptions",
     icon: SubscriptionsIcon,
     href: "/subscriptions",
+    key: "Devices",
+  },
+  {
+    id: uuid(),
+    title: "Audit Logs",
+    icon: HistoryIcon,
+    href: "/audit-logs",
     key: "Devices",
   },
   // {

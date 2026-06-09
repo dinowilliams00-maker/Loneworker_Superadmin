@@ -11,10 +11,9 @@ import {
 import CommonDialog from "../../../Components/common/dialog/common-dialog";
 import CustomTextField from "../../../Components/common/textfield";
 import { useUpdateSim } from "../../../services/apis/sim";
-
-
-
-// ================= EDIT SIM COMPONENT =================
+import Calendar from "../../../Components/common/textfield/DatePicker/index";
+import { useState } from "react";
+import { CalanderIcon } from "../../../Components/common/icons";// ================= EDIT SIM COMPONENT =================
 const EditSim = ({
     open,
     setOpen,
@@ -26,6 +25,8 @@ const EditSim = ({
         register,
         handleSubmit,
         reset,
+        setValue,
+        watch,
         formState: { errors },
     } = useForm({
         mode: "onChange",
@@ -36,6 +37,10 @@ const EditSim = ({
             activationDate: "",
         },
     });
+
+    // ================= CALENDAR STATE =================
+    const [openCalendar, setOpenCalendar] = useState(false);
+    const activationDateValue = watch("activationDate");
 
     // ================= SET DEFAULT VALUES =================
     useEffect(() => {
@@ -138,7 +143,7 @@ const EditSim = ({
                             shrink
                             error={!!errors.mobileNumber}
                             helperText={errors.mobileNumber?.message}
-                            maxLength={10}
+                            maxLength={15}
                         />
                     </Grid>
 
@@ -156,12 +161,39 @@ const EditSim = ({
                     {/* ================= ACTIVATION DATE (Optional) ================= */}
                     <Grid size={12}>
                         <CustomTextField
-                            {...register("activationDate")}
-                            type="date"
+                            value={
+                                activationDateValue
+                                    ? moment(activationDateValue).format("DD-MM-YYYY")
+                                    : ""
+                            }
                             label="Activation Date"
-                            name="activationDate"
+                            placeholder="Select Activation Date"
                             shrink
-                            InputLabelProps={{ shrink: true }}
+                            field="icon"
+                            icon={<CalanderIcon />}
+                            handleClickOpen={() => setOpenCalendar(true)}
+                        />
+                        <Calendar
+                            openClick={openCalendar}
+                            setOpenClick={setOpenCalendar}
+                            showDate={false}
+                            defaultDateRange={
+                                activationDateValue
+                                    ? {
+                                          startDate: new Date(activationDateValue),
+                                          endDate: new Date(activationDateValue),
+                                          key: "selection",
+                                      }
+                                    : undefined
+                            }
+                            getDataFromChildHandler={(ranges) => {
+                                if (ranges && ranges.length > 0) {
+                                    setValue("activationDate", ranges[0].startDate, {
+                                        shouldValidate: true,
+                                        shouldDirty: true,
+                                    });
+                                }
+                            }}
                         />
                     </Grid>
 

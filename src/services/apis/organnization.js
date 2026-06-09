@@ -204,6 +204,9 @@ export const UpdateOrgById = (options = {}) => {
       queryClient.invalidateQueries({
         queryKey: ["GetAllTenants"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["GetAllOrgDetailsById"]
+      })
     },
     ...options,
   });

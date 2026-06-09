@@ -58,6 +58,8 @@ import DebouncedInput from "../../../Components/common/searchField";
 
 import CustomSelect from "../../../Components/common/customSelect";
 
+import EditAdmin from "../dialogs/EditAdmin";
+
 // ================= STATUS CHIP =================
 
 const StatusChip = ({ status }) => {
@@ -104,6 +106,7 @@ const OrganizationDetails = () => {
     const [openAssignDialog, setOpenAssignDialog] = useState(false);
     const [assignDialogType, setAssignDialogType] = useState(""); // "Assign" or "Unassign"
     const [selectedDevices, setSelectedDevices] = useState([]);
+    const [openEditTenant, setOpenEditTenant] = useState(false);
 
     // ================= PAGINATION =================
     const [devicePagination, setDevicePagination] = useState({
@@ -124,7 +127,7 @@ const OrganizationDetails = () => {
 
     // ================= FILTER OPTIONS =================
     const poolTypeOptions = [
-        { label: "All Pool Type", value: "" },
+        { label: "Account  Type", value: "" },
         { label: "Demo", value: "Demo" },
         { label: "Production", value: "Production" },
     ];
@@ -338,6 +341,7 @@ const OrganizationDetails = () => {
 
     return (
         <>
+
             {/* ================= HEADER ================= */}
             <ManagementGrid
                 moduleName="Organization Admin Details"
@@ -349,6 +353,12 @@ const OrganizationDetails = () => {
                 activateDeactivateBtn={isDeactivated ? "Activate Organization" : "Deactivate Organization"}
                 activateDeactivateFunction={handleActivateDeactivate}
                 isDeactivated={isDeactivated}
+
+                
+                // Edit Button
+                button="Edit Organization"
+                handleClickOpen={() => setOpenEditTenant(true)}
+                edit={true}
                 // Delete Button
                 deleteBtn="Delete Organization"
                 deleteFunction={handleDelete}
@@ -419,7 +429,7 @@ const OrganizationDetails = () => {
 
                         <Grid size={12}>
                             <CustomTable
-                                columns={["DEVICE ID", "SERIAL NUMBER", "SIM ASSIGNED", "POOL TYPE", "STATUS"]}
+                                columns={["DEVICE ID", "SERIAL NUMBER", "SIM ASSIGNED", "ACCOUNT TYPE", "STATUS"]}
                                 rows={formattedDeviceRows(deviceDetails?.data?.data || [])}
                                 loading={deviceLoading}
                                 pagination={devicePagination}
@@ -471,59 +481,86 @@ const OrganizationDetails = () => {
                     </Grid>
                 </Box>
             )}
+{/* ================= ASSIGN/UNASSIGN DIALOG ================= */}
+<Dialog 
+    open={openAssignDialog} 
+    onClose={handleCloseAssignDialog} 
+    maxWidth="xs"           
+    fullWidth
+>
+    <DialogTitle>
+        {assignDialogType} Devices
+    </DialogTitle>
+    <DialogContent dividers >
+        <Box sx={{ mt: 1 }}>
+            <Typography variant="body1" mb={2} color="textSecondary">
+                Please select devices to {assignDialogType?.toLowerCase()}:
+            </Typography>
+            <FormControl fullWidth>
+                <InputLabel id="multiple-select-label" sx={{width:"100%"}}>
+                     Devices
+                </InputLabel>
 
-            {/* ================= ASSIGN/UNASSIGN DIALOG ================= */}
-            <Dialog open={openAssignDialog} onClose={handleCloseAssignDialog} maxWidth="xs" fullWidth >
-                <DialogTitle>
-                    {assignDialogType} Devices
-                </DialogTitle>
-                <DialogContent dividers>
-                    <Box sx={{ mt: 1 }}>
-                        <Typography variant="body1" mb={2} color="textSecondary">
-                            Please select devices to {assignDialogType?.toLowerCase()}:
-                        </Typography>
-                        <FormControl fullWidth>
-                            <InputLabel id="mutiple-select-label">
-                                Devices
-                            </InputLabel>
-
-                            <Select
-                                labelId="mutiple-select-label"
-                                multiple
-                                value={selectedDevices}
-                                onChange={(e) => setSelectedDevices(e.target.value)}
-                                label="Devices"
-                                renderValue={(selected) => `${selected.length} selected`}
-                                MenuProps={{
-                                    PaperProps: {
-                                        style: {
-                                            maxHeight: 300,
-                                        },
-                                    },
-                                }}
-                            >
-                                {(assignDialogType === "Assign"
-                                    ? (assignDevicesData?.data?.data || [])
-                                    : (unassignDevicesData?.data?.data || [])
-                                ).map(dev => (
-                                    <MenuItem key={dev._id} value={dev._id}>
-                                        <Checkbox checked={selectedDevices.includes(dev._id)} />
-                                        <ListItemText primary={dev.deviceId} />
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Box>
-                </DialogContent>
-                <DialogActions sx={{ p: 2 }}>
-                    <Button variant="outlined" onClick={handleCloseAssignDialog} disabled={isUpdatingDevice}>
-                        Cancel
-                    </Button>
-                    <Button variant="contained" onClick={handleAssignUnassignSubmit} disabled={isUpdatingDevice || selectedDevices.length === 0} color={assignDialogType === "Unassign" ? "error" : "primary"}>
-                        {assignDialogType}
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                <Select
+    labelId="multiple-select-label"
+    multiple
+    value={selectedDevices}
+    onChange={(e) => setSelectedDevices(e.target.value)}
+    label="Devices"
+    renderValue={(selected) => `${selected.length} selected`}
+    placeholder="Select Devices"
+    MenuProps={{
+        PaperProps: {
+            style: {
+                maxHeight: 300,
+                width: 300,
+                zIndex: 9999,
+            },
+        },
+        anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'left',
+        },
+        transformOrigin: {
+            vertical: 'bottom',
+            horizontal: 'left',
+        },
+        disablePortal: false,
+    }}
+>
+                    {(assignDialogType === "Assign"
+                        ? (assignDevicesData?.data?.data || [])
+                        : (unassignDevicesData?.data?.data || [])
+                    ).map(dev => (
+                        <MenuItem key={dev._id} value={dev._id}>
+                            <Checkbox checked={selectedDevices.includes(dev._id)} />
+                            <ListItemText primary={dev.deviceId} />
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+        </Box>
+    </DialogContent>
+    <DialogActions sx={{ px: 2, py: 2, display: "flex", justifyContent: "flex-end" }}>
+        <Button variant="outlined" onClick={handleCloseAssignDialog} disabled={isUpdatingDevice}>
+            Cancel
+        </Button>
+        <Button 
+            variant="contained" 
+            onClick={handleAssignUnassignSubmit} 
+            disabled={isUpdatingDevice || selectedDevices.length === 0} 
+            color={assignDialogType === "Unassign" ? "error" : "primary"}
+        >
+            {assignDialogType}
+        </Button>
+    </DialogActions>
+</Dialog>
+            <EditAdmin
+                open={openEditTenant}
+                setOpen={setOpenEditTenant}
+                organizationDetails={organizationDetails}
+                id={id}
+            />
         </>
     );
 };

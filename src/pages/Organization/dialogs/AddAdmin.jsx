@@ -97,7 +97,7 @@ const AddAdmin = ({ open, setOpen }) => {
         <>
             <CommonDialog
                 open={open}
-                title="Add Admin"
+                title="Add Admin Details"
                 onClose={handleClose}
                 message="Are you sure want to cancel?"
                 maxWidth="sm"

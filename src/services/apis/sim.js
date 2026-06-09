@@ -136,11 +136,18 @@ export const useDeleteSimById = (options = {}) => {
 };
 
 //=============Assign and Unassign Sim===========================================
-const AssignAndUnassignSim = async ({ id, type, deviceId }) => {
+const AssignAndUnassignSim = async ({ id, type, deviceId, userId }) => {
     try {
+        const payload = { type, deviceId };
+        let url = `sim-registry/assign-unassign-sim/${id}`;
+        if (userId ) {
+            payload.assigned_to = userId;
+            url += `?assigned_to=${userId}`;
+        }
+
         const response = await axiosInstance.patch(
-            `sim-registry/assign-unassign-sim/${id}`,
-            { type, deviceId }
+            url,
+            payload
         );
 
         return response.data;

@@ -6,6 +6,7 @@ import {
   MenuItem,
   Typography,
   Button,
+  IconButton,
 } from "@mui/material";
 
 import { MailIcon, CloseEye, OpenEye, PasswordIcon } from "../icons";
@@ -76,7 +77,7 @@ const CustomTextField = ({
             justifyContent: field === "button" ? "space-between" : "inherit",
           },
 
-          // 🔥 Only apply special color when disabledColor prop is passed
+          //  Only apply special color when disabledColor prop is passed
           ...(restProps.disabledColor && {
             "& .MuiInputBase-input.Mui-disabled": {
               color: restProps.disabledColor,
@@ -107,6 +108,12 @@ const CustomTextField = ({
                   sx={{ cursor: "pointer" }}
                 >
                   {showPassword ? <CloseEye /> : <OpenEye />}
+                </InputAdornment>
+              ) : field === "icon" ? (
+                <InputAdornment position="end">
+                  <IconButton size="small" onClick={handleClickOpen}>
+                    {icon}
+                  </IconButton>
                 </InputAdornment>
               ) : field === "button" ? (
                 <InputAdornment position="end">

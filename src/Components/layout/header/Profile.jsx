@@ -132,7 +132,7 @@ export default function AccountMenu() {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem
+        {/* <MenuItem
           onClick={() => {
             handleClose();
             router("/admin-settings");
@@ -142,9 +142,7 @@ export default function AccountMenu() {
             <SettingsIcon fontSize="small" />
           </ListItemIcon>
           Settings
-        </MenuItem>
-
-        <Divider />
+        </MenuItem> */}
 
         <MenuItem onClick={() => {
           handleClose();

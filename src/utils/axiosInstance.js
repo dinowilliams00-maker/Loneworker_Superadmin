@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_API_URL || "http://10.5.50.148:8008/api/v1/",
+  baseURL: import.meta.env.VITE_BACKEND_API_URL || "http://10.5.50.113:8008/api/v1/",
   timeout: 15000,
   // withCredentials: true,
 });

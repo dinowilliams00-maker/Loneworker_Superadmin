@@ -11,11 +11,11 @@ import moment from "moment";
 
 import ManagementGrid from "../../Components/common/managementGrid";
 import DetailsListingSkeleton from "../../Components/common/skelenton/detailsListingSkeleton";
-// import { notifyError, notifySuccess } from "../../Components/common/snackbar";
+import { notifyError, notifySuccess } from "../../Components/common/snackbar";
 import CustomTextField from "../../Components/common/textfield";
-import { useGetDeviceById } from "../../services/apis/device";
+import { useGetDeviceById, useDeleteDeviceById } from "../../services/apis/device";
 
-// import EditDevice from "./diaog/EditDevice"; // Assuming you will create this
+import EditDevice from "./dialogs/EditDevice";
 
 // ================= STATUS CHIP =================
 const StatusChip = ({ status }) => {
@@ -60,7 +60,7 @@ const DeviceDetails = () => {
 
     // ================= API =================
     const { data: deviceDetails, isLoading } = useGetDeviceById(id);
-    // const { mutate: deleteDevice } = useDeleteDeviceById();
+    const { mutate: deleteDevice } = useDeleteDeviceById();
 
     // ================= EDIT HANDLER =================
     const handleEditClick = () => {
@@ -71,15 +71,22 @@ const DeviceDetails = () => {
     // ================= DELETE DEVICE =================
     const handleDeleteDevice = () => {
         if (id) {
-            deleteDevice(id, {
-                onSuccess: (data) => {
-                    notifySuccess(data?.message || "Device Deleted Successfully");
-                    navigate("/device-management"); // Adjust route as per your project
-                },
-                onError: (error) => {
-                    notifyError(error?.message || "Something went wrong");
-                },
-            });
+            // assignedTo comes from the device response — data.userId
+            const assignedTo = deviceDetails?.data?.userId;
+            const deviceId = deviceDetails?.data?._id; // _id from response
+
+            deleteDevice(
+                { id: deviceId, assignedTo },
+                {
+                    onSuccess: (data) => {
+                        notifySuccess(data?.message || "Device Deleted Successfully");
+                        navigate("/device-management");
+                    },
+                    onError: (error) => {
+                        notifyError(error?.message || "Something went wrong");
+                    },
+                }
+            );
         }
     };
 
@@ -96,7 +103,7 @@ const DeviceDetails = () => {
             label: "Mobile Number",
             value: deviceDetails?.data?.simId?.mobileNumber || "NA"
         },
-        { label: "Pool Type", value: deviceDetails?.data?.poolType || "NA" },
+        { label: "Account Type", value: deviceDetails?.data?.poolType || "NA" },
         {
             label: "Status",
             value: (
@@ -223,12 +230,12 @@ const DeviceDetails = () => {
             )}
 
             {/* ================= EDIT DEVICE DIALOG ================= */}
-            {/* <EditDevice
+            <EditDevice
                 open={openEdit}
                 setOpen={setOpenEdit}
                 deviceDetails={deviceDetails}
                 id={id}
-            /> */}
+            />
         </>
     );
 };

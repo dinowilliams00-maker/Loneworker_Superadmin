@@ -156,17 +156,18 @@ const AddDevice = ({ open, setOpen, onSuccess }) => {
                                 required:
                                     "IMEI is required",
 
-                                minLength: {
-                                    value: 10,
-                                    message:
-                                        "IMEI must be at least 10 digits",
-                                },
-
-                                pattern: {
-                                    value: /^\d+$/,
-                                    message:
-                                        "IMEI must contain only numbers",
-                                },
+                               minLength: {
+                                   value: 15,
+                                   message: "IMEI must be exactly 15 digits",
+                               },
+                               maxLength: {
+                                   value: 15,
+                                   message: "IMEI must be exactly 15 digits",
+                               },
+                               pattern: {
+                                   value: /^\d{15}$/,
+                                   message: "IMEI must contain only numbers and be exactly 15 digits",
+                               },
                             })}
                             placeholder="Enter IMEI Number"
                             label="IMEI"
@@ -176,7 +177,7 @@ const AddDevice = ({ open, setOpen, onSuccess }) => {
                             helperText={
                                 errors.imei?.message
                             }
-                            maxLength={20}
+                            maxLength={15}
                         />
                     </Grid>
 
@@ -214,7 +215,7 @@ const AddDevice = ({ open, setOpen, onSuccess }) => {
                             }}
                             render={({ field }) => (
                                 <CustomSelect
-                                    label="Pool Type"
+                                    label="Account Type"
                                     name={field.name}
                                     value={field.value}
                                     onChange={(selected) =>

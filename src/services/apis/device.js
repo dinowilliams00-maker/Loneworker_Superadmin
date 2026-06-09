@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Cookies from "js-cookie";
-import axiosInstance from "../../utils/axiosInstance";
+import axiosInstance from "src/Components/common/utils/axiosInstance";
 
 
 // Get all Devices (supports pagination, search, etc.)
@@ -192,6 +192,83 @@ export const useDeviceBulkUpload = () => {
         retryDelay: 1000,
 
         onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["GetAllDevices"],
+            });
+        },
+    });
+};
+
+// ==================================Update Device By Id==================================
+
+const updateDeviceById = async ({ id, assignedTo, data }) => {
+    try {
+        let url = `device-registry/update-device/${id}?assigned_to=${assignedTo}`;
+        const response = await axiosInstance.patch(url, data);
+
+        return response.data;
+    } catch (error) {
+        throw new Error(
+            error?.response?.data?.message ||
+            "Failed to update device"
+        );
+    }
+};
+
+export const useUpdateDeviceById = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: updateDeviceById,
+
+        retry: 2,
+
+        retryDelay: 1000,
+
+        onSuccess: (data, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: ["getDeviceById", variables.id],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["GetAllDevices"],
+            });
+        },
+    });
+};
+
+// Delete Api 
+
+const deleteDeviceById = async ({ id, assignedTo }) => {
+    try {
+        const response = await axiosInstance.delete(
+            `device-registry/delete-device/${id}`,
+            {
+                params: {
+                    assigned_to: assignedTo,
+                },
+            }
+        );
+        return response.data;
+    } catch (error) {
+        throw new Error(
+            error?.response?.data?.message ||
+            "Failed to delete device"
+        );
+    }
+};
+
+export const useDeleteDeviceById = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: deleteDeviceById,
+
+        retry: 2,
+
+        retryDelay: 1000,
+
+        onSuccess: () => {
+            // Only refresh the list — don't refetch getDeviceById since the device is deleted
             queryClient.invalidateQueries({
                 queryKey: ["GetAllDevices"],
             });

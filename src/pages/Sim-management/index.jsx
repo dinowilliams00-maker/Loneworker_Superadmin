@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from "react";
-import { Box, Grid, IconButton, Button, Typography, Chip, Dialog, DialogTitle, DialogContent, DialogActions, Tooltip } from "@mui/material";
+import React, { useState, useCallback, useMemo } from "react";
+import { Box, Grid, IconButton, Button, Typography, Chip, Dialog, DialogTitle, DialogContent, DialogActions, Tooltip, RadioGroup, FormControlLabel, Radio, CircularProgress } from "@mui/material";
 import moment from "moment";
 
 import DebouncedInput from "../../Components/common/searchField";
@@ -17,7 +17,6 @@ import { getAllDevice } from "../../services/apis/device";
 import { getAllTenants } from "../../services/apis/organnization";
 import BulkUploadSim from "./diaog/BulkUploadSim";
 import LinkIcon from "@mui/icons-material/Link";
-
 // Breadcrumb
 const breadcrumbItems = [
   { label: "Organizations", link: "/" },
@@ -36,10 +35,17 @@ const SimManagement = () => {
   const [filters, setFilters] = useState({
     organization: "",
     device: "",
+    status: "",
   });
 
   const [openAddSim, setOpenAddSim] = useState(false);
-  const [confirmDialog, setConfirmDialog] = useState({ open: false, type: "", simId: "", deviceId: null });
+  const [confirmDialog, setConfirmDialog] = useState({
+    open: false,
+    type: "",
+    simId: "",
+    deviceId: null,
+    userId: "",      // userId of the selected device to send as assigned_to
+  });
   const [openBulkUpload, setOpenBulkUpload] = useState(false);
 
   const handleOpenUpload = () => {
@@ -51,15 +57,20 @@ const SimManagement = () => {
 
   const handleAssignUnassign = () => {
     assignUnassignSim(
-      { id: confirmDialog.simId, type: confirmDialog.type, deviceId: confirmDialog.deviceId },
+      {
+        id: confirmDialog.simId,
+        type: confirmDialog.type,
+        deviceId: confirmDialog.deviceId,
+        userId: confirmDialog.userId || "",   // send userId for both assign & unassign
+      },
       {
         onSuccess: (data) => {
           notifySuccess(data?.message || `SIM ${confirmDialog.type === "assign" ? "Assigned" : "Unassigned"} Successfully`);
-          setConfirmDialog({ open: false, type: "", simId: "", deviceId: null });
+          setConfirmDialog({ open: false, type: "", simId: "", deviceId: null, userId: "" });
         },
         onError: (error) => {
           notifyError(error?.message || "Something went wrong");
-          setConfirmDialog({ open: false, type: "", simId: "", deviceId: null });
+          setConfirmDialog({ open: false, type: "", simId: "", deviceId: null, userId: "" });
         }
       }
     );
@@ -166,12 +177,17 @@ const SimManagement = () => {
             <IconButton
               size="small"
               color={item?.deviceId ? "error" : "primary"}
-              onClick={() => setConfirmDialog({
-                open: true,
-                type: item?.deviceId ? "unassign" : "assign",
-                simId: item?._id,
-                deviceId: item?.deviceId?._id || item?.deviceId,
-              })}
+              onClick={() => {
+                const devId = item?.deviceId?._id || item?.deviceId;
+                const foundDevice = devicesData?.data?.data?.find(d => d._id === devId);
+                setConfirmDialog({
+                  open: true,
+                  type: item?.deviceId ? "unassign" : "assign",
+                  simId: item?._id,
+                  deviceId: devId,
+                  userId: foundDevice?.userId || item?.userId || item?.deviceId?.userId || "",
+                });
+              }}
             >
               {item?.deviceId ? <CloseIcon size={22} /> : <LinkIcon size={22} />}
             </IconButton>
@@ -202,8 +218,11 @@ const SimManagement = () => {
     ...(unassignedDevicesData?.data?.data?.map((item) => ({
       label: item?.deviceId,
       value: item?._id,
+      userId: item?.userId || "",       // include userId from device response
     })) || [])
   ]
+
+  // Remove unused filteredAssignDevices — handled by CustomSelect's searchable internally
 
   return (
     <>
@@ -243,7 +262,7 @@ const SimManagement = () => {
                   />
 
                   {/* Organization Filter - CustomSelect */}
-                  <Box sx={{ minWidth: 200 }}>
+                  <Box sx={{ minWidth: 150 }}>
                     <CustomSelect
                       displayEmpty
                       value={filters.organization}
@@ -253,12 +272,27 @@ const SimManagement = () => {
                   </Box>
 
                   {/* Device Filter - CustomSelect */}
-                  <Box sx={{ minWidth: 200 }}>
+                  <Box sx={{ minWidth: 150 }}>
                     <CustomSelect
                       displayEmpty
                       value={filters.device}
                       onChange={handleDeviceChange}
                       options={deviceOptions}
+                    />
+                  </Box>
+
+                  {/* Status Filter - CustomSelect */}
+                  <Box sx={{ minWidth: 150 }}>
+                    <CustomSelect
+                      displayEmpty
+                      value={filters.status}
+                      onChange={''}
+                      options={[
+                        { label: "All Status", value: "" },
+                        { label: "Active", value: "Active" },
+                        { label: "In Repair", value: "In Repair" },
+                        
+                      ]}
                     />
                   </Box>
 
@@ -301,21 +335,27 @@ const SimManagement = () => {
         setOpenUpload={setOpenBulkUpload}
       />
 
-      <Dialog open={confirmDialog.open} onClose={() => setConfirmDialog({ ...confirmDialog, open: false })} maxWidth="xs" fullWidth>
+      <Dialog open={confirmDialog.open} onClose={() => setConfirmDialog({ open: false, type: "", simId: "", deviceId: null, userId: "" })} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ bgcolor: confirmDialog.type === "unassign" ? "error.light" : "primary.main", color: "white" }}>
           {confirmDialog.type === "unassign" ? "Confirmation" : "Assign SIM"}
         </DialogTitle>
         <DialogContent dividers>
           {confirmDialog.type === "assign" ? (
             <Box sx={{ mt: 1 }}>
-              <Typography variant="body1" mb={2} color="textSecondary">
-                Please select a device to assign this SIM to:
+              <Typography variant="body1" mb={2} color="text.secondary">
+                Select a device to assign this SIM to:
               </Typography>
               <CustomSelect
+                placeholder="Select a Device"
                 value={confirmDialog.deviceId || ""}
-                onChange={(selected) => setConfirmDialog({ ...confirmDialog, deviceId: selected?.value || selected })}
-                options={AssUnoptions.filter(opt => opt.value !== "")}
+                onChange={(selected) => setConfirmDialog({
+                  ...confirmDialog,
+                  deviceId: selected?.value || "",
+                  userId: selected?.userId || "",   // capture userId from selected option
+                })}
+                options={AssUnoptions}
                 fullWidth
+                searchable                        // search inside dropdown
               />
             </Box>
           ) : (
@@ -327,7 +367,7 @@ const SimManagement = () => {
         <DialogActions sx={{ p: 2 }}>
           <Button
             variant="outlined"
-            onClick={() => setConfirmDialog({ ...confirmDialog, open: false })}
+            onClick={() => setConfirmDialog({ open: false, type: "", simId: "", deviceId: null, userId: "" })}
             disabled={isAssigning}
             sx={{ color: "black", borderColor: "black" }}
           >

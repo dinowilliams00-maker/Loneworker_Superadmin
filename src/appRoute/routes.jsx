@@ -16,6 +16,7 @@ const DeviceDetails = lazy(() => import("../pages/Device-management/DeviceDetail
 const SimManagement = lazy(() => import("../pages/Sim-management"));
 const SimDetails = lazy(() => import("../pages/Sim-management/SimDetails"));
 const Subscriptions = lazy(() => import("../pages/Subscriptions"));
+const AuditLogs = lazy(() => import("../pages/AuditLogs"));
 // const SiteDetails = lazy(() => import("../pages/Site-management/SiteDetails"));
 const AdminSettings = lazy(() => import("../pages/Admin-settings"));
 const AdminDetails = lazy(() => import("../pages/Admin-settings/AdminDetails"));
@@ -59,6 +60,7 @@ export const routesForAuthenticatedOnly = [
       { path: "/sim-management/:id", element: <SimDetails /> },
       { path: "/subscriptions", element: <Subscriptions /> },
       // { path: "/site-management/:id", element: <SiteDetails /> },
+      { path: "/audit-logs", element: <AuditLogs /> },
       { path: "/admin-settings", element: <AdminSettings /> },
       { path: "/profile", element: <Profile /> },
       { path: "/admin-settings/:id", element: <AdminDetails /> },

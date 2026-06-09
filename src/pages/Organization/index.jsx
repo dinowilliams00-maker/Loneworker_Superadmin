@@ -5,10 +5,10 @@ import DebouncedInput from "../../Components/common/searchField";
 import CustomTable from "../../Components/common/table/customTable";
 import { getAllTenants } from "../../services/apis/organnization";
 import { useNavigate } from "react-router-dom";
-import { EyeIcon, AddIcon, EditTableIcon } from "../../Components/common/icons";
+import { EyeIcon, AddIcon } from "../../Components/common/icons";
 import ManagementGrid from "../../Components/common/managementGrid";
 import AddAdmin from "./dialogs/AddAdmin";
-import EditAdmin from "./dialogs/EditAdmin";
+
 //import PaginationState from "../../Components/common/commonPaginationState";
 
 // Breadcrumb
@@ -22,8 +22,6 @@ const Tenants = () => {
     searchQuery: "",
   });
   const [openAddTenant, setOpenAddTenant] = useState(false);
-  const [openEditTenant, setOpenEditTenant] = useState(false);
-  const [selectedOrg, setSelectedOrg] = useState(null);
   const [openUpload, setOpenUpload] = useState(false);
 
 
@@ -33,6 +31,7 @@ const Tenants = () => {
   // Status Chip for ADmin
   // ==================== IMPROVED STATUS CHIP ====================
   // Status Chip for Organizations (isDeactivated)
+  //i wan the color of active is green and inactive is red
   const StatusChip = ({ status }) => {
     const isInactive = Boolean(status); // true if deactivated
 
@@ -59,7 +58,7 @@ const Tenants = () => {
     }));
   }, []);
 
-
+  // this is the Formated Rows for the table of First Letter is Capital
   const formattedRows = (data = []) => {
     return data.map((item, index) => ({
       name: item?.name?.trim()
@@ -89,21 +88,8 @@ const Tenants = () => {
             </IconButton>
           </Grid>
 
-          {/* Edit Icon */}
-          <Grid item>
-            <IconButton
-              onClick={() => {
-                setSelectedOrg(item);
-                setOpenEditTenant(true);
-              }}
-
-              color="secondary"
-            >
-              <EditTableIcon size={20} />
-            </IconButton>
-          </Grid>
         </Grid>
-      ),  // ← Comma is now correctly placed after the closing parenthesis
+      )
     }));
   };
 
@@ -115,6 +101,7 @@ const Tenants = () => {
         textData={`Last Updated: ${moment().format("DD-MM-YYYY HH:mm")}`}
         textDataColor="text.primary"
       />
+
       <Box sx={{ bgcolor: "white", p: 3, borderRadius: 6 }}>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12 }}>
@@ -171,14 +158,6 @@ const Tenants = () => {
       <AddAdmin
         open={openAddTenant}
         setOpen={setOpenAddTenant}
-      />
-      <EditAdmin
-        open={openEditTenant}
-        setOpen={setOpenEditTenant}
-        organizationDetails={{
-          data: selectedOrg,
-        }}
-        id={selectedOrg?._id}
       />
     </>
   );

@@ -179,7 +179,7 @@ const EditAdmin = ({
         <>
             <CommonDialog
                 open={open}
-                title="Edit Admin"
+                title="Edit Admin Details"
                 onClose={handleClose}
                 message="Are you sure want to cancel?"
                 maxWidth="sm"
