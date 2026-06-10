@@ -30,7 +30,7 @@ const Sidebar = ({
   };
 
   return (
-    <Box sx={{ width: sidebarWidth }}>
+    <Box sx={{ width: { xs: 0, lg: sidebarWidth }, flexShrink: 0 }}>
       <Drawer
         anchor="left"
         open={lgUp ? isSidebarOpen : isMobileSidebarOpen}

@@ -147,19 +147,19 @@ const DeviceDetails = () => {
         {
             label: "Assigned At",
             value: deviceDetails?.data?.assignedAt
-                ? moment(deviceDetails.data.assignedAt).format("DD-MM-YYYY HH:mm")
+                ? moment(deviceDetails.data.assignedAt).format("DD-MM-YYYY,  HH:mm A")
                 : "NA",
         },
         {
             label: "Created At",
             value: deviceDetails?.data?.createdAt
-                ? moment(deviceDetails.data.createdAt).format("DD-MM-YYYY HH:mm")
+                ? moment(deviceDetails.data.createdAt).format("DD-MM-YYYY, hh:mm A")
                 : "NA",
         },
         {
             label: "Updated At",
             value: deviceDetails?.data?.updatedAt
-                ? moment(deviceDetails.data.updatedAt).format("DD-MM-YYYY HH:mm")
+                ? moment(deviceDetails.data.updatedAt).format("DD-MM-YYYY, hh:mm A")
                 : "NA",
         },
     ];

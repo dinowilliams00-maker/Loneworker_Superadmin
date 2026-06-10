@@ -36,17 +36,18 @@ const RootLayout = () => {
         sx={{
           minHeight: "calc(100vh - 170px)",
           marginLeft: {
-            xs: "20px",
-            sm: "20px",
+            xs: "0px",
+            sm: "0px",
             lg: "260px",
           },
-          marginRight: "10px",
+          marginRight: "0px",
         }}
       >
         <Container
           maxWidth="xl"
           sx={{
-            mt: 12,
+            mt: { xs: 10, lg: 12 },
+            px: { xs: 1, sm: 2, lg: 3 }
           }}
         >
           {token ? <Outlet /> : <Navigate to="/auth/signin" replace />}

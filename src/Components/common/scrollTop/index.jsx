@@ -15,5 +15,5 @@ export default function ScrollToTop() {
     });
   }, [pathname]);
 
-  return null;
+  return null; // when we Get the Route 
 }

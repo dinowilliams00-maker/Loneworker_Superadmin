@@ -115,6 +115,14 @@ const SimManagement = () => {
     setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
+  const handleStatusChange = (selected) => {
+    setFilters((prev) => ({
+      ...prev,
+      status: selected?.value || "",
+    }));
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  };
+
   //================== Add Handler =============
   const handleOpenAdd = () => {
     setOpenAddSim(true);
@@ -126,13 +134,13 @@ const SimManagement = () => {
       const s = status?.toLowerCase()?.trim();
 
       if (["active", "excellent"].includes(s)) {
-        return { bg: "#e6f9ec", color: "#3FB00F", label: status };
+        return { bg: "#e6f9ec", color: "#3FB00F", label: "Assigned" };
       }
       if (["fair", "in repair", "repair"].includes(s)) {
         return { bg: "#fff7e0", color: "#F6B000", label: "In Repair" };
       }
       if (["inactive", "bad", "office"].includes(s)) {
-        return { bg: "#ffecec", color: "#FF3B30", label: status };
+        return { bg: "#ffecec", color: "#FF3B30", label: "Unassigned" };
       }
       return { bg: "#e0e0e0", color: "#424242", label: status || "Unknown" };
     };
@@ -141,7 +149,7 @@ const SimManagement = () => {
 
     return (
       <Chip
-        label={label}
+        label={label} 
         size="small"
         sx={{
           backgroundColor: bg,
@@ -246,19 +254,20 @@ const SimManagement = () => {
                 justifyContent="space-between"
                 alignItems="center"
                 mb={3}
+                sx={{ flexDirection: { xs: "column", md: "row" }, gap: { xs: 2, md: 0 }, alignItems: { xs: "flex-start", md: "center" } }}
               >
                 <Typography sx={{ fontSize: "1.2rem", fontWeight: 600 }}>
                   SIM Inventory
                 </Typography>
 
-                <Grid container justifyContent="flex-end" gap={2} alignItems="center">
+                <Grid container justifyContent={{ xs: "flex-start", md: "flex-end" }} gap={2} alignItems="center" sx={{ width: { xs: "100%", md: "auto" } }}>
                   {/* Search */}
                   <DebouncedInput
                     placeholder="Search by SIM Number / Mobile No"
                     value={pagination.searchQuery || ""}
                     onChange={handleSearchChange}
                     delay={500}
-                    sx={{ minWidth: 250 }}
+                    sx={{ minWidth: 50 }}
                   />
 
                   {/* Organization Filter - CustomSelect */}
@@ -270,7 +279,7 @@ const SimManagement = () => {
                       options={organizationOptions}
                     />
                   </Box>
-
+                
                   {/* Device Filter - CustomSelect */}
                   <Box sx={{ minWidth: 150 }}>
                     <CustomSelect
@@ -286,11 +295,11 @@ const SimManagement = () => {
                     <CustomSelect
                       displayEmpty
                       value={filters.status}
-                      onChange={''}
+                      onChange={handleStatusChange}
                       options={[
                         { label: "All Status", value: "" },
-                        { label: "Active", value: "Active" },
-                        { label: "In Repair", value: "In Repair" },
+                        { label: "Assigned", value: "Active" },
+                        { label: "Unassigned", value: "Inactive" },
                         
                       ]}
                     />

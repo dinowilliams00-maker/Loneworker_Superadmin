@@ -28,9 +28,10 @@ const CustomTable = ({
   };
 
   return (
-    <TableContainer component={Paper}>
-      <Table aria-label="custom pagination table">
+    <TableContainer component={Paper} sx={{ width: '100%', overflowX: 'auto' }}>
+      <Table aria-label="custom pagination table" sx={{ minWidth: { xs: 650, md: '100%' } }}>
         <TableBody>
+          {/* Here we definr the TableBody */}
           <TableRow>
             {columns.map((column, colIndex) => (
               <TableCell key={colIndex} align={column.align}>

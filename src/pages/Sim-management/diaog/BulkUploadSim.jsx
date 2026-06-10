@@ -62,10 +62,10 @@ const BulkUploadSim = ({ openUpload, setOpenUpload }) => {
 
         // Define Columns
         worksheet.columns = [
-            { header: "simNumber", key: "simNumber", width: 20 },
-            { header: "mobileNumber", key: "mobileNumber", width: 20 },
-            { header: "provider", key: "provider", width: 20 },
-            { header: "activationDate", key: "activationDate", width: 20 },
+            { header: "SIM Number", key: "simNumber", width: 20 },
+            { header: "Mobile Number", key: "mobileNumber", width: 20 },
+            { header: "Provider", key: "provider", width: 20 },
+            { header: "Activation Date", key: "activationDate", width: 20 },
         ];
 
         // Style Header

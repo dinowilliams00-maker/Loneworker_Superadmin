@@ -87,7 +87,7 @@ const SimDetails = () => {
     { label: "SIM Number", value: simDetails?.data?.simNumber || "NA" },
     { label: "Mobile Number", value: simDetails?.data?.mobileNumber || "NA" },
     { label: "Provider", value: simDetails?.data?.provider || "NA" },
-    { label: "Plan Type", value: simDetails?.data?.planType || "NA" },
+    { label: "Plan Type", value: simDetails?.data?. planType || "NA" },
     {
       label: "Status",
       value: (
@@ -113,7 +113,7 @@ const SimDetails = () => {
     {
       label: "Renewal Date",
       value: simDetails?.data?.renewalDate
-        ? moment(simDetails.data.renewalDate).format("DD-MM-YYYY")
+        ? moment(simDetails.data.renewalDate).format("DD-MM-YYYY ")
         : "NA",
     },
   ];
@@ -182,7 +182,7 @@ const SimDetails = () => {
         </Grid>
       )}
 
-      {/* ================= EDIT SIM DIALOG ================= */}
+      {/* ================= EDIT SIM DIALOG =================== */}
       <EditSim
         open={openEdit}
         setOpen={setOpenEdit}

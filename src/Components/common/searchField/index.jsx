@@ -28,7 +28,7 @@ const DebouncedInput = ({
 
   const handleChange = (event) => {
     setDebouncedValue(event.target.value);
-  };
+  }; // here we definr set the Debunce Value 
 
   const handleClear = () => {
     setDebouncedValue("");

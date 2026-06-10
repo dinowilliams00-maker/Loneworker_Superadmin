@@ -31,7 +31,7 @@ const Tenants = () => {
   // Status Chip for ADmin
   // ==================== IMPROVED STATUS CHIP ====================
   // Status Chip for Organizations (isDeactivated)
-  //i wan the color of active is green and inactive is red
+  //I want the color of active is green and inactive is red
   const StatusChip = ({ status }) => {
     const isInactive = Boolean(status); // true if deactivated
 
@@ -95,6 +95,7 @@ const Tenants = () => {
 
   return (
     <>
+     {/* Custom Hook for Management Grid - START */}
       <ManagementGrid
         moduleName="Organizations"
         breadcrumbItems={breadcrumbItems}
@@ -111,27 +112,31 @@ const Tenants = () => {
                 justifyContent="space-between"
                 alignItems="center"
                 mb={3}
+                sx={{ flexDirection: { xs: "column", md: "row" }, gap: { xs: 2, md: 0 }, alignItems: { xs: "flex-start", md: "center" } }}
               >
                 <Typography sx={{ fontSize: "1.2rem", fontWeight: 600 }}>Admin List</Typography>
                 <Grid
                   container
-                  justifyContent="flex-end"
+                  justifyContent={{ xs: "flex-start", md: "flex-end" }}
                   gap={2}
                   alignItems="center"
+                  sx={{ width: { xs: "100%", md: "auto" } }}
                 >
+                  {/* Custom Search field */}
                   <DebouncedInput
                     placeholder="Search by Name/Email"
                     value={pagination.searchQuery || ""}
                     onChange={handleSearchChange}
                     delay={500}
-                    sx={{ minWidth: 100 }}
+                    sx={{ minWidth: 100, flexGrow: { xs: 1, sm: 0 }, width: { xs: "100%", sm: "auto" } }}
                   />
 
                   <Button variant="contained"
                     onClick={() => setOpenAddTenant(true)}
                     sx={{
                       textTransform: 'none',
-                      gap: 0.5  // This adds space between icon and text
+                      gap: 0.5,  // This adds space between icon and text
+                      width: { xs: "100%", sm: "auto" }
                     }}
                   >
                     <AddIcon fontSize={20} color="white" />

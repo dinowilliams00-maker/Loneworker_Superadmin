@@ -60,10 +60,10 @@ const BulkUploadDevice = ({ openUpload, setOpenUpload }) => {
 
         // Updated Columns as per your requirement
         worksheet.columns = [
-            { header: "deviceId", key: "deviceId", width: 20 },
-            { header: "serialNumber", key: "serialNumber", width: 25 },
-            { header: "imei", key: "imei", width: 25 },
-            { header: "batch", key: "batch", width: 20 },
+            { header: "Device Id", key: "deviceId", width: 20 },
+            { header: "Serial Number", key: "serialNumber", width: 25 },
+            { header: "IMEI", key: "imei", width: 25 },
+            { header: "Batch", key: "batch", width: 20 },
         ];
 
         // Style Header
@@ -93,7 +93,7 @@ const BulkUploadDevice = ({ openUpload, setOpenUpload }) => {
         worksheet.getColumn("imei").numFmt = "@";
 
         // Add note at the bottom
-        worksheet.getCell("A13").value = "Note: deviceId, serialNumber, and imei are required fields";
+        // worksheet.getCell("A13").value = "Note: deviceId, serialNumber, and imei are required fields";
         worksheet.getCell("A13").font = { italic: true, color: { argb: "FFFF0000" } };
 
         // Export file

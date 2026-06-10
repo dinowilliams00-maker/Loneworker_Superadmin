@@ -31,7 +31,7 @@ const CustomTable = (props) => {
       page: newPage + 1,
     }));
   };
-
+  // Here we handle the rows per page
   const handleChangeRowsPerPage = (event) => {
     setPagination?.((prev) => ({
       ...prev,
@@ -146,8 +146,7 @@ const CustomTable = (props) => {
                     justifyContent: "center",
                     alignItems: "center",
                     minHeight: 300,
-
-                  }}
+                 }}
                 >
                   <Grid
                     container

@@ -247,12 +247,12 @@ const Devices = () => {
         <Grid container spacing={3}>
           <Grid size={{ xs: 12 }}>
             <div className="custom-Grid">
-              <Grid container justifyContent="space-between" alignItems="center" mb={3}>
+              <Grid container justifyContent="space-between" alignItems="center" mb={3} sx={{ flexDirection: { xs: "column", md: "row" }, gap: { xs: 2, md: 0 }, alignItems: { xs: "flex-start", md: "center" } }}>
                 <Typography sx={{ fontSize: "1.2rem", fontWeight: 600 }}>
                   Device List
                 </Typography>
 
-                <Grid container justifyContent="flex-end" gap={2} alignItems="center">
+                <Grid container justifyContent={{ xs: "flex-start", md: "flex-end" }} gap={2} alignItems="center" sx={{ width: { xs: "100%", md: "auto" } }}>
                   <DebouncedInput
                     placeholder="Search by Device ID / Serial No"
                     value={pagination.searchQuery || ""}
