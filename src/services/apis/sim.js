@@ -39,6 +39,10 @@ export const useGetAllSim = (
                 queryParams.deviceId = params.device;
             }
 
+            if (params.status) {
+                queryParams.status = params.status;
+            }
+
             const response = await axiosInstance.get(
                 `sim-registry/get-sim-inventory`,
                 {
